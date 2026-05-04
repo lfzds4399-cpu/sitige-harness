@@ -1,0 +1,52 @@
+artifact: content
+description: 内容生产流水线 — 选题 → 脚本 → AIGC prompt → 合规 → brief
+version: 1.0.0
+
+# ---- 全局 (各 stage 默认继承) ----
+provider: deepseek
+model: null            # 留空走 LLMClient 默认 (deepseek-chat)
+candidates: 5
+platforms: [douyin, xiaohongshu, bilibili]
+weekly_count:
+  douyin: 4
+  xiaohongshu: 3
+  bilibili: 1
+brand_keywords: [四面体电竞, 三角洲, 撤离, 黑金, 留学生友好]
+tone: 兄弟向 / 实战派 / 不油腻
+
+# ---- stages ----
+stages:
+  - name: select_topic
+    enabled: true
+    timeout_sec: 120
+    validators: []
+    config:
+      candidates: 5
+      temperature: 0.7
+
+  - name: generate_script
+    enabled: true
+    timeout_sec: 180
+    validators: []
+    config:
+      temperature: 0.6
+
+  - name: aigc_assets
+    enabled: true
+    timeout_sec: 120
+    validators: []
+    config:
+      temperature: 0.4
+
+  - name: compliance_review
+    enabled: true
+    timeout_sec: 120
+    validators: [compliance_validator]
+    config:
+      strictness: high
+
+  - name: publish_brief
+    enabled: true
+    timeout_sec: 30
+    validators: []
+    config: {}

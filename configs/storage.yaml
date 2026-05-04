@@ -1,0 +1,42 @@
+# 四面体电竞 harness · 存储层配置
+# 真正生效以环境变量为准, 这里是缺省 + 文档.
+
+db:
+  url_env: TETRA_DB_URL
+  default: "sqlite+aiosqlite:///data/tetra.db"
+  pool_size: 10
+  echo: false
+
+cache:
+  url_env: REDIS_URL
+  default: ""        # 空 → in-memory fallback
+  default_ttl_sec: 600
+
+artifact:
+  provider: qiniu    # qiniu / oss / cos / local
+
+  qiniu:
+    access_key_env: QINIU_AK
+    secret_key_env: QINIU_SK
+    bucket: tetra-harness
+    domain: cdn.example.com   # 部署时换成实际加速域
+
+  oss:
+    access_key_env: ALIYUN_AK
+    secret_key_env: ALIYUN_SK
+    bucket: tetra-harness
+    endpoint: oss-cn-shenzhen.aliyuncs.com
+
+  cos:
+    secret_id_env: TENCENT_SECRET_ID
+    secret_key_env: TENCENT_SECRET_KEY
+    bucket: tetra-harness-1300000000   # 腾讯云 bucket 末尾必须带 appid
+    region: ap-guangzhou
+
+  local:
+    path: data/artifacts/
+
+secrets:
+  provider: env              # env / sops / composite
+  sops_file: configs/secrets.enc.yaml
+  # composite 模式优先级: sops > env > default

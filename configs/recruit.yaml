@@ -1,0 +1,61 @@
+artifact: recruit
+description: 工作室招募流水线 — 渠道扫描 → 触达 → KYC → 押金 → 签约
+version: 1.0.0
+
+# ---- 全局 ----
+channels:
+  - qq_groups
+  - tieba
+  - hupu
+  - nga
+  - bilibili
+  - boss
+  - douyin
+  - xiaohongshu
+kyc_fields: [business_license, legal_rep, years]
+deposit_base_rmb: 5000
+trial_days: 7
+
+# ---- stages ----
+stages:
+  - name: scan_channels
+    enabled: true
+    timeout_sec: 60
+    validators: []
+    config:
+      mock: true                 # 真接 dataos / 蝉妈妈 时改 false
+      candidates_per_channel: 5
+
+  - name: outreach_draft
+    enabled: true
+    timeout_sec: 30
+    validators: []
+    config:
+      max_drafts: 50
+
+  - name: qualify
+    enabled: true
+    timeout_sec: 60
+    validators: []
+    config:
+      strict: true
+      minor_threshold: 18
+
+  - name: deposit
+    enabled: true
+    timeout_sec: 15
+    validators: []
+    config:
+      tiers:
+        S: 1.00
+        A: 1.10
+        B: 1.25
+        C: 1.50
+
+  - name: sign_offer
+    enabled: true
+    timeout_sec: 15
+    validators: []
+    config:
+      contract_template: legal/合作工作室协议.md
+      sop_template: ops/招商 SOP.md

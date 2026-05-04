@@ -1,0 +1,35 @@
+artifact: compliance
+description: 合规审核流水线 — text_scan → image_audit → final_gate
+version: 1.0.0
+
+# ---- 全局 ----
+provider: deepseek
+model: null
+platform: douyin              # 默认按抖音规则; 可在 stage config 覆盖
+strictness: high              # low / mid / high
+manual_review_threshold: 60   # final score < 阈值 → 入人工队列
+
+# ---- stages ----
+stages:
+  - name: text_scan
+    enabled: true
+    timeout_sec: 120
+    validators: [compliance_validator]
+    config:
+      strictness: high
+
+  - name: image_audit
+    enabled: true
+    timeout_sec: 60
+    validators: []
+    config:
+      provider: stub          # 真接 wanxiang / shumei / yidun
+      max_images: 20
+
+  - name: final_gate
+    enabled: true
+    timeout_sec: 15
+    validators: []
+    config:
+      manual_review_threshold: 60
+      escalate_to: ops/内容审核 SOP.md

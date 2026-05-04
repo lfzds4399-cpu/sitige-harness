@@ -1,0 +1,169 @@
+[project]
+name = "sitige-harness"
+version = "0.1.0"
+description = "Pipeline engineering harness — composable agents/validators/pipelines runtime, CLI-driven, observable."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Lin", email = "lfzds4399@gmail.com" }]
+license = { text = "MIT" }
+keywords = ["pipeline", "harness", "agents", "validators", "automation", "llm-orchestration"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+  "typer>=0.12.0",
+  "rich>=13.0",
+  "pyyaml>=6.0",
+  "python-dotenv>=1.0",
+  "pydantic>=2.0",
+  "httpx>=0.27",
+  "openai>=1.40",
+  "tenacity>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "pytest-cov>=5.0",
+  "ruff>=0.6.0",
+  "mypy>=1.11.0",
+  "bandit>=1.7.9",
+  "pre-commit>=3.7.0",
+  "types-PyYAML",
+]
+api = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.30",
+  "websockets>=12",
+]
+observability = [
+  "prometheus-client>=0.20",
+  "opentelemetry-sdk>=1.25",
+  "opentelemetry-instrumentation-httpx",
+  "DingtalkChatbot>=1.5",
+]
+scheduling = [
+  "APScheduler>=3.10",
+  "tenacity>=8.0",
+]
+storage = [
+  "sqlalchemy[asyncio]>=2.0",
+  "alembic>=1.13",
+  "asyncpg>=0.29",
+  "aiosqlite>=0.20",
+  "redis[hiredis]>=5.0",
+  "qiniu>=7.13",
+  "oss2>=2.18",
+  "cos-python-sdk-v5>=1.9",
+]
+docs = [
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.5",
+  "mkdocs-mermaid2-plugin>=1.1",
+  "pymdown-extensions>=10.8",
+]
+all = [
+  "sitige-harness[dev,api,observability,scheduling,storage,docs]",
+]
+
+[project.scripts]
+sitige = "tetra_harness.cli:app"
+
+[project.entry-points."tetra_harness.migrations"]
+v1_to_v2 = "tetra_harness.migrations.v1_to_v2:V1ToV2"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+# ============================================================
+# Quality gates
+# ============================================================
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = [
+  "alembic/versions",
+  "data",
+  "logs",
+  "dashboard",
+  "build",
+  "dist",
+  ".venv",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "S", "ASYNC"]
+# E501 line too long (我们用 100 但有时长字符串需放过)
+# S101 assert in tests
+# S603 subprocess call (我们走 utils/subprocess_safe.safe_run, 不裸用)
+ignore = ["E501", "S101", "S603"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106"]
+"alembic/versions/*" = ["E501", "F401", "I001"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false  # gradual; 整体 non-strict, 核心模块开 strict
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+show_error_codes = true
+exclude = [
+  "alembic/",
+  "build/",
+  "dist/",
+  "tests/",
+]
+
+[[tool.mypy.overrides]]
+module = [
+  "tetra_harness.utils.*",
+  "tetra_harness.manifest",
+  "tetra_harness.config",
+]
+strict = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "alembic/versions", "build", "dist"]
+# B101 assert / B404 subprocess import / B603 subprocess (走 safe_run) / B607 partial path
+skips = ["B101", "B404", "B603", "B607"]
+
+[tool.coverage.run]
+source = ["src/tetra_harness"]
+omit = [
+  "*/tests/*",
+  "*/migrations/versions/*",
+  "*/alembic/*",
+  "*/__main__.py",
+]
+branch = true
+
+[tool.coverage.report]
+fail_under = 50  # gradual, 后续提到 80
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+]
+show_missing = true

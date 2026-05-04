@@ -1,0 +1,53 @@
+# 四面体电竞 · 调度配置
+# 加载: TetraScheduler.load_from_yaml("harness/configs/schedule.yaml")
+# cron 5 段: 分 时 日 月 周   (支持 6 段 = 秒在最前)
+# 时区: TetraScheduler 默认 Asia/Shanghai
+
+jobs:
+  # ----- 内容/数据 -----
+  - id: daily_intel_collect
+    cron: "30 23 * * *"            # 每天 23:30
+    pipeline: content
+    stage: select_topic
+    enabled: true
+    notes: "收集社媒选题数据 + LLM 生成话题候选"
+
+  # ----- 合规/红线 -----
+  - id: hourly_compliance_scan
+    cron: "0 * * * *"              # 每小时整点
+    validator: compliance
+    enabled: true
+    notes: "USDT/Fair Work/Stripe 三红线扫描"
+
+  - id: hourly_secret_scan
+    cron: "5 * * * *"              # 每小时 :05 (错峰避免和 compliance 冲突)
+    validator: secret_scanner
+    enabled: true
+    notes: "API key/私钥泄漏扫描"
+
+  # ----- 财务 -----
+  - id: daily_cost_report
+    cron: "0 9 * * *"              # 每天 09:00
+    func: tetra_harness.scheduling.jobs:daily_cost_report
+    enabled: true
+    notes: "昨日 LLM 调用成本 + 钉钉推送"
+
+  # ----- 审计 -----
+  - id: weekly_audit_report
+    cron: "0 9 * * 1"              # 每周一 09:00
+    validator: all
+    report: true
+    enabled: true
+    notes: "全量 audit + JSON 报告 (供 dashboard 看板)"
+
+  # ----- 业务兜底 -----
+  - id: half_hour_orphan_settle
+    cron: "*/30 * * * *"           # 每 30 分钟
+    pipeline: match
+    stage: settle
+    enabled: false                 # 默认关 (要 server 在线)
+    notes: "扫超时未结算订单 + 自动兜底"
+
+# DLQ 重试 worker 不写这里 (interval 触发, 由代码 add_interval_job 注册)
+# 如需打开, 在启动脚本里:
+#     scheduler.add_interval_job(dlq_retry_worker, seconds=60, job_id="dlq_retry")

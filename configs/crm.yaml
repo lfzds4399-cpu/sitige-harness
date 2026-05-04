@@ -1,0 +1,44 @@
+artifact: crm
+description: 客服流水线 — intake → route → auto_reply → human_handoff
+version: 1.0.0
+
+# ---- 全局 ----
+provider: deepseek
+model: null
+top_k: 4
+auto_reply_threshold: 0.4   # confidence >= 阈值才自动发, 否则转人工
+knowledge_base_paths:
+  - legal
+  - ops/客服话术库.md
+  - risk/平台关键词审核表.md
+
+# ---- stages ----
+stages:
+  - name: intake
+    enabled: true
+    timeout_sec: 10
+    validators: []
+    config: {}
+
+  - name: route
+    enabled: true
+    timeout_sec: 30
+    validators: []
+    config:
+      categories: [refund, technical, consult, complaint, other]
+
+  - name: auto_reply
+    enabled: true
+    timeout_sec: 60
+    validators: []
+    config:
+      top_k: 4
+      auto_reply_threshold: 0.4
+
+  - name: human_handoff
+    enabled: true
+    timeout_sec: 10
+    validators: []
+    config:
+      sensitive_categories: [complaint]
+      sensitive_keywords: [投诉, 举报, 曝光, 315, 媒体, 公安, 起诉]

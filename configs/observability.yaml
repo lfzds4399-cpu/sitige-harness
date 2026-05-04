@@ -1,0 +1,67 @@
+# 四面体电竞 Harness · 可观测性配置
+# 国产优先: 阿里 ARMS / 腾讯 APM / 钉钉 / 飞书 / 阿里云邮件
+#
+# 加载: tetra_harness.observability 各模块按需读
+# 修改后无需重启 Prometheus, /metrics 端点是动态的
+
+metrics:
+  enabled: true
+  endpoint: /metrics             # FastAPI router 路径 (与 health.py 一致)
+  port: 9090                     # api agent 起的服务端口 (仅供文档参考, 不在这层绑)
+  service_name: tetra-harness
+
+# OpenTelemetry tracing
+tracing:
+  exporter: console              # console / otlp / disable
+  sample_rate: 0.1               # 生产建议 0.05~0.2
+  service_name: tetra-harness
+  # 阿里云 ARMS:  http://tracing-analysis-dc-hz.aliyuncs.com:8090
+  # 腾讯云 APM:   http://apm.tencentcs.com:55681
+  otlp_endpoint: http://localhost:4317
+
+# 告警
+alerts:
+  thresholds:
+    llm_cost_usd_per_hour: 5.0   # 超 → warn 飞书
+    pipeline_failure_rate: 0.1   # 失败率 >10% → error 钉钉
+    validator_errors_per_run: 50 # 单次审核 error 累计 >50 → critical 钉钉@all
+    order_backlog: 100           # 未派单订单堆积 → warn 钉钉
+
+  # 多通道, 任一成功即算告警送达; 主备失败再走邮件兜底
+  channels:
+    - type: dingding
+      enabled: true
+      webhook_env: DINGDING_WEBHOOK
+      secret_env: DINGDING_SECRET
+      at_all_on_critical: true
+      severities: [error, critical, warn]
+
+    - type: feishu
+      enabled: true
+      webhook_env: FEISHU_WEBHOOK
+      secret_env: FEISHU_SECRET
+      severities: [warn, error, critical]
+
+    - type: email
+      enabled: false
+      smtp_env_prefix: ALIYUN_MAIL_   # ALIYUN_MAIL_HOST/PORT/USER/PASS/SENDER
+      to: [ops@example.com]
+      severities: [error, critical]
+
+# 业务侧 readiness 探活清单 (仅声明, 实际由业务代码 register_check 注册)
+readiness:
+  expect:
+    - postgres
+    - redis
+    - llm:openai
+    - llm:deepseek
+  timeout_sec: 3.0
+
+# Prometheus 抓取建议 (供 ops 写 prometheus.yml 参考)
+prometheus_scrape:
+  job_name: tetra-harness
+  scrape_interval: 15s
+  metrics_path: /metrics
+  static_configs:
+    - targets:
+        - localhost:9090

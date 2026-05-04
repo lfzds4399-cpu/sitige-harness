@@ -1,0 +1,31 @@
+# 审核任务配置 — 兼容旧 audit.py 145 检查 + 新 validators 扩展
+artifact: audit
+description: 项目自审 (13 模块 + 5 法务红线 + 新增 validators)
+
+# 列出本 artifact 要跑的 validators (validators agent 实现)
+validators:
+  - name: file_existence       # 13 模块基础结构
+    enabled: true
+  - name: secret_scanner       # .env / 密钥泄露扫描
+    enabled: true
+  - name: cost_tracker         # 成本告警 (默认关闭)
+    enabled: false
+    threshold_usd_per_day: 10
+  - name: compliance           # ICP / 备案 / 隐私
+    enabled: true
+  - name: legal_doc            # 11 篇法务文档完整度
+    enabled: true
+  - name: risk                 # 11 篇风控 SOP
+    enabled: true
+  - name: pricing              # 定价策略一致性
+    enabled: true
+
+# 全局开关
+strict: false      # warn 当 fail
+report: false      # 写 last-audit.json
+verbose: false     # 显示所有 ok 项
+
+# 旧 audit.py 兼容
+legacy_compat:
+  enabled: true
+  script: harness/audit.py

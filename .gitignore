@@ -1,0 +1,57 @@
+# Environments
+.env
+.env.local
+.env.*.local
+.venv/
+venv/
+env/
+
+# Runtime artifacts
+data/**
+!data/.gitkeep
+logs/
+*.log
+last-audit.json
+audit-*.json
+runs/
+manifests/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Dashboard (Next.js)
+dashboard/node_modules/
+dashboard/.next/
+dashboard/out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+site/
+
+# Claude
+.claude/

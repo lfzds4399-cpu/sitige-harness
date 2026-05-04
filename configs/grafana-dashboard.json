@@ -1,0 +1,235 @@
+{
+  "title": "Tetra Harness · Observability",
+  "uid": "tetra-harness-obs",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["tetra", "harness", "黑金"],
+  "timezone": "Asia/Shanghai",
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": { "text": "Prometheus", "value": "Prometheus" }
+      },
+      {
+        "name": "pipeline",
+        "type": "query",
+        "datasource": "$datasource",
+        "query": "label_values(tetra_pipeline_runs_total, pipeline)",
+        "includeAll": true,
+        "multi": true
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "deploy",
+        "datasource": "$datasource",
+        "enable": true,
+        "iconColor": "rgba(255,215,0,1)",
+        "expr": "changes(tetra_pipeline_runs_total[5m]) == 0",
+        "titleFormat": "deploy / 静默"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Pipeline 跑次/成功率",
+      "type": "piechart",
+      "datasource": "$datasource",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by(status) (increase(tetra_pipeline_runs_total{pipeline=~\"$pipeline\"}[1h]))",
+          "legendFormat": "{{status}}"
+        }
+      ],
+      "options": { "legend": { "showLegend": true }, "pieType": "donut" }
+    },
+    {
+      "id": 2,
+      "title": "Pipeline 耗时 P50/P95/P99",
+      "type": "timeseries",
+      "datasource": "$datasource",
+      "gridPos": { "x": 6, "y": 0, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum by(le, pipeline) (rate(tetra_pipeline_duration_seconds_bucket{pipeline=~\"$pipeline\"}[5m])))",
+          "legendFormat": "p50 {{pipeline}}"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by(le, pipeline) (rate(tetra_pipeline_duration_seconds_bucket{pipeline=~\"$pipeline\"}[5m])))",
+          "legendFormat": "p95 {{pipeline}}"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by(le, pipeline) (rate(tetra_pipeline_duration_seconds_bucket{pipeline=~\"$pipeline\"}[5m])))",
+          "legendFormat": "p99 {{pipeline}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 3,
+      "title": "健康状态 RAG",
+      "type": "stat",
+      "datasource": "$datasource",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "expr": "1 - (sum(increase(tetra_pipeline_runs_total{status=\"fail\"}[15m])) / clamp_min(sum(increase(tetra_pipeline_runs_total[15m])), 1))",
+          "legendFormat": "成功率"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "yellow", "value": 0.9 },
+              { "color": "green", "value": 0.99 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "area" }
+    },
+    {
+      "id": 4,
+      "title": "Agent 调用 (stacked)",
+      "type": "barchart",
+      "datasource": "$datasource",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 7 },
+      "targets": [
+        {
+          "expr": "sum by(agent, result) (increase(tetra_agent_calls_total[5m]))",
+          "legendFormat": "{{agent}}/{{result}}"
+        }
+      ],
+      "options": { "stacking": { "mode": "normal" }, "orientation": "vertical" }
+    },
+    {
+      "id": 5,
+      "title": "LLM token 速率 (provider 分组)",
+      "type": "timeseries",
+      "datasource": "$datasource",
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 7 },
+      "targets": [
+        {
+          "expr": "sum by(provider, kind) (rate(tetra_llm_tokens_total[5m]))",
+          "legendFormat": "{{provider}}/{{kind}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "tps" } }
+    },
+    {
+      "id": 6,
+      "title": "LLM 累计成本 (USD)",
+      "type": "timeseries",
+      "datasource": "$datasource",
+      "gridPos": { "x": 0, "y": 13, "w": 12, "h": 7 },
+      "targets": [
+        {
+          "expr": "sum by(provider, model) (tetra_llm_cost_usd_total)",
+          "legendFormat": "{{provider}}/{{model}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "id": 7,
+      "title": "Validator finding 热力",
+      "type": "heatmap",
+      "datasource": "$datasource",
+      "gridPos": { "x": 12, "y": 13, "w": 12, "h": 7 },
+      "targets": [
+        {
+          "expr": "sum by(validator, severity) (increase(tetra_validator_findings_total[5m]))",
+          "legendFormat": "{{validator}}/{{severity}}"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "订单数 / 小时",
+      "type": "timeseries",
+      "datasource": "$datasource",
+      "gridPos": { "x": 0, "y": 20, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by(status) (increase(tetra_orders_total[1h]))",
+          "legendFormat": "{{status}}"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "派单延迟 (P95)",
+      "type": "timeseries",
+      "datasource": "$datasource",
+      "gridPos": { "x": 8, "y": 20, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by(le) (rate(tetra_order_match_latency_seconds_bucket[5m])))",
+          "legendFormat": "p95"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 10,
+      "title": "活跃工作室 / 师傅",
+      "type": "stat",
+      "datasource": "$datasource",
+      "gridPos": { "x": 16, "y": 20, "w": 8, "h": 6 },
+      "targets": [
+        { "expr": "tetra_active_partners", "legendFormat": "工作室" },
+        { "expr": "tetra_active_masters", "legendFormat": "师傅" }
+      ],
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 11,
+      "title": "错误日志 Top 10 (LLM)",
+      "type": "table",
+      "datasource": "$datasource",
+      "gridPos": { "x": 0, "y": 26, "w": 12, "h": 7 },
+      "targets": [
+        {
+          "expr": "topk(10, sum by(provider, code) (increase(tetra_llm_error_total[1h])))",
+          "format": "table",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "系统资源 (CPU/MEM/Disk)",
+      "type": "timeseries",
+      "datasource": "$datasource",
+      "gridPos": { "x": 12, "y": 26, "w": 12, "h": 7 },
+      "targets": [
+        {
+          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "CPU %"
+        },
+        {
+          "expr": "(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100",
+          "legendFormat": "MEM %"
+        },
+        {
+          "expr": "100 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|fuse.*\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|fuse.*\"}) * 100",
+          "legendFormat": "Disk %"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } }
+    }
+  ]
+}

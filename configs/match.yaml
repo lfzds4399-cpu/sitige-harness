@@ -1,0 +1,63 @@
+artifact: match
+description: 派单流水线 — intake → screen → match → dispatch → track → settle
+version: 1.0.0
+
+# ---- 全局 ----
+server_url: null        # 留空 = 本地 mock; 真跑用 TETRA_SERVER_URL 环境变量
+timeout_sec: 8
+
+# 6 因子权重 (合 1.0; server 端可覆盖)
+weights:
+  rank: 0.25         # 段位匹配
+  rating: 0.25       # 评分历史
+  geo: 0.10          # 物理位置
+  language: 0.10     # 语言偏好
+  schedule: 0.15     # 时段可用
+  history: 0.15      # 历史合作
+
+ack_timeout_min: 5
+fallback_chain: [secondary_master, open_bid]
+dispatch_channels: [kook, qq, wechat]
+default_amount_rmb: 99
+
+# ---- stages ----
+stages:
+  - name: intake
+    enabled: true
+    timeout_sec: 10
+    validators: []
+    config: {}
+
+  - name: screen
+    enabled: true
+    timeout_sec: 15
+    validators: []
+    config:
+      blacklist_path: null    # 真跑指向 risk/黑名单管理.md 衍生 .txt
+      minor_threshold: 18
+
+  - name: match
+    enabled: true
+    timeout_sec: 15
+    validators: []
+    config: {}
+
+  - name: dispatch
+    enabled: true
+    timeout_sec: 15
+    validators: []
+    config: {}
+
+  - name: track
+    enabled: true
+    timeout_sec: 10
+    validators: []
+    config:
+      ack_timeout_min: 5
+
+  - name: settle
+    enabled: true
+    timeout_sec: 10
+    validators: []
+    config:
+      default_amount_rmb: 99
