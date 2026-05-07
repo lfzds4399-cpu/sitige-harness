@@ -1,6 +1,16 @@
-"""file_existence — 145+ 项业务文件/目录/内容存在性检查.
+"""file_existence — 145+ 项业务文件/目录/内容存在性检查 (reference example).
 
-完整迁移自 harness/audit.py (18.3KB). 按 18+ 模块拆函数:
+⚠️  This validator encodes the **original e-sports business use case** that
+the harness was extracted from. The 18 modules (brand/web/legal/risk/ops/biz/
+kook/qq-channels/deploy/compliance/...) reflect that specific domain.
+
+For your own project, treat this file as a **template**: copy it, swap the
+module names + required-file lists for your domain, but keep the structure
+(per-module ``check_<name>(root)`` fn returning ``(severity, code, msg, detail)``
+tuples + ``ALL_CHECKS`` registry). The harness machinery (Validator base,
+ValidationResult, line_is_exempt) is generic.
+
+按 18+ 模块拆函数:
 brand / web / miniprogram / app / wechat / bot / server / partners / seller /
 content / marketing / legal / risk / ops / biz / kook / qq-channels / deploy /
 compliance / meta
@@ -12,9 +22,8 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, line_is_exempt, safe_read
+from .base import ValidationResult, Validator, line_is_exempt, safe_read
 
 
 # ----------------- helpers (仿 audit.py 风格, 但 root 显式传) -----------------
@@ -51,7 +60,7 @@ def _module_simple_dir(root: Path, name: str, dir_name: str | None = None) -> tu
     d = dir_name or name
     if _dir_exists(root, d):
         n = sum(1 for _ in (root / d).rglob("*") if _.is_file())
-        return 1, [("ok", f"DIR_EXISTS_{d.upper()}", f"{d}/ 目录存在 ({n} 文件)", "")] if name == "brand" else (1, [("ok", f"DIR_EXISTS_{d.upper()}", f"{d}/ 目录存在", "")])[1] and (1, [("ok", f"DIR_EXISTS", f"{d}/ 目录存在", "")])[1]
+        return 1, [("ok", f"DIR_EXISTS_{d.upper()}", f"{d}/ 目录存在 ({n} 文件)", "")] if name == "brand" else (1, [("ok", f"DIR_EXISTS_{d.upper()}", f"{d}/ 目录存在", "")])[1] and (1, [("ok", "DIR_EXISTS", f"{d}/ 目录存在", "")])[1]
     return 0, [("info", "DIR_MISSING", f"{d}/ 目录不存在", "")]
 
 
@@ -303,13 +312,13 @@ def check_kook(root: Path) -> list[tuple]:
     bad_color_lines = []
     for line in roles_text.splitlines():
         if "#A2185F" in line or "#9D00FF" in line:
-            if not line_is_exempt(line, ("TetraGG", "海外版")):
+            if not line_is_exempt(line):
                 bad_color_lines.append(line.strip()[:60])
     if bad_color_lines:
         out.append(("error", "KOOK_BAD_COLOR",
-                    "出现 TetraGG 红紫色（违反配色锁）", "; ".join(bad_color_lines)))
+                    "出现红紫色 hex（违反 brand 配色锁）", "; ".join(bad_color_lines)))
     else:
-        out.append(("ok", "KOOK_COLOR_LOCK", "无非法红紫色（黑金锁通过）", ""))
+        out.append(("ok", "KOOK_COLOR_LOCK", "无非法红紫色（brand 配色锁通过）", ""))
 
     welcome_text = _read_text(root, "kook/welcome-flow.md")
     if "信息撮合" in welcome_text and ("18" in welcome_text or "未成年" in welcome_text):
@@ -445,14 +454,14 @@ def check_deploy(root: Path) -> list[tuple]:  # noqa: C901
         out.append(("error", "DEPLOY_ENV_FILE", ".env.全栈.example 缺失", ""))
 
     # 3. nginx
-    nginx_files = ["ops/deploy/nginx.conf", "ops/deploy/conf.d/tetragg.conf"]
+    nginx_files = ["ops/deploy/nginx.conf", "ops/deploy/conf.d/site.conf"]
     for f in nginx_files:
         if _file_exists(root, f):
             out.append(("ok", "DEPLOY_NGINX_FILE", f"{f} ({_file_size(root, f)//1024}KB)", ""))
         else:
             out.append(("error", "DEPLOY_NGINX_MISSING", f"{f} 缺失", ""))
 
-    nginx_text = _read_text(root, "ops/deploy/conf.d/tetragg.conf")
+    nginx_text = _read_text(root, "ops/deploy/conf.d/site.conf")
     if "return 301 https" in nginx_text:
         out.append(("ok", "DEPLOY_HTTPS_REDIR", "80 → 443 强制跳转", ""))
     else:
@@ -588,7 +597,7 @@ def check_deploy(root: Path) -> list[tuple]:  # noqa: C901
         _read_text(root, "docker-compose.yml"),
         _read_text(root, ".env.全栈.example"),
         _read_text(root, "ops/deploy/nginx.conf"),
-        _read_text(root, "ops/deploy/conf.d/tetragg.conf"),
+        _read_text(root, "ops/deploy/conf.d/site.conf"),
         _read_text(root, "ops/deploy/backup.sh"),
         _read_text(root, "ops/deploy/coding-cicd.yml"),
     ])
@@ -666,7 +675,7 @@ class FileExistenceValidator(Validator):
     name = "file_existence"
     description = "18 模块结构 + 145+ 项目文件存在性 + 内容关键字检查"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             for mod_name, fn in ALL_CHECKS:

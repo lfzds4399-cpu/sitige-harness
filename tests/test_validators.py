@@ -38,6 +38,20 @@ def tmp_root(tmp_path: Path):
 
 @pytest.fixture
 def real_root():
+    """Original e-sports business project root (private, not in OSS repo).
+
+    Tests using this fixture exercise the reference validators against the
+    upstream business project (legal/risk/ops/biz/kook/... layout). When the
+    OSS repo is checked out standalone those directories are absent, so we
+    skip the test rather than fail it. To run the real-project assertions,
+    point pytest at a checkout that contains the business directories.
+    """
+    if not (REAL_ROOT / "legal").is_dir():
+        pytest.skip(
+            "requires upstream business project layout "
+            "(legal/risk/ops/biz/kook/qq-channels/ ...) — "
+            "this validator is shipped as a reference example only"
+        )
     return REAL_ROOT
 
 
