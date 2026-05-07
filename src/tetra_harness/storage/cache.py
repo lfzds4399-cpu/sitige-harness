@@ -11,7 +11,7 @@ import logging
 import os
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 _log = logging.getLogger("tetra.cache")
 
@@ -22,7 +22,7 @@ def _serialize(v: Any) -> str:
     return json.dumps(v, ensure_ascii=False, default=str)
 
 
-def _deserialize(v: Optional[str]) -> Any:
+def _deserialize(v: str | None) -> Any:
     if v is None:
         return None
     if not isinstance(v, str):
@@ -43,7 +43,7 @@ class Cache(ABC):
     async def get(self, key: str) -> Any | None: ...
 
     @abstractmethod
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None: ...
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> None: ...
 
     @abstractmethod
     async def delete(self, key: str) -> None: ...
@@ -62,10 +62,10 @@ class InMemoryCache(Cache):
     """进程内 dict + ttl. 单进程 dev / 测试 / Redis fallback."""
 
     def __init__(self) -> None:
-        self._data: Dict[str, Tuple[Any, Optional[float]]] = {}
+        self._data: dict[str, tuple[Any, float | None]] = {}
         self._lock = asyncio.Lock()
 
-    def _alive(self, expire: Optional[float]) -> bool:
+    def _alive(self, expire: float | None) -> bool:
         return expire is None or expire > time.time()
 
     async def get(self, key: str) -> Any | None:
@@ -79,7 +79,7 @@ class InMemoryCache(Cache):
                 return None
             return value
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         async with self._lock:
             expire = time.time() + ttl if ttl else None
             self._data[key] = (value, expire)
@@ -95,7 +95,7 @@ class InMemoryCache(Cache):
         async with self._lock:
             tup = self._data.get(key)
             cur = 0
-            expire: Optional[float] = None
+            expire: float | None = None
             if tup is not None:
                 v, expire = tup
                 if not self._alive(expire):
@@ -125,7 +125,7 @@ class RedisCache(Cache):
         v = await self._r.get(key)
         return _deserialize(v)
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         await self._r.set(key, _serialize(value), ex=ttl)
 
     async def delete(self, key: str) -> None:
@@ -147,7 +147,7 @@ class RedisCache(Cache):
                 pass
 
 
-_singleton: Optional[Cache] = None
+_singleton: Cache | None = None
 
 
 def get_cache() -> Cache:

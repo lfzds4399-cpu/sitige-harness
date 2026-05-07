@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 from dotenv import load_dotenv
@@ -29,7 +29,7 @@ def _load_env_once() -> None:
     _ENV_LOADED = True
 
 
-def load_config(name: str, configs_dir: Optional[Path] = None) -> dict[str, Any]:
+def load_config(name: str, configs_dir: Path | None = None) -> dict[str, Any]:
     """从 configs/<name>.yaml 加载配置, 同时确保 .env 已注入."""
     _load_env_once()
     base = configs_dir or CONFIGS_DIR
@@ -43,7 +43,7 @@ def load_config(name: str, configs_dir: Optional[Path] = None) -> dict[str, Any]
     return data
 
 
-def get_env(key: str, default: Optional[str] = None) -> Optional[str]:
+def get_env(key: str, default: str | None = None) -> str | None:
     """读环境变量 (惰性加载 .env). None / 空串 都视为未设置."""
     _load_env_once()
     v = os.getenv(key, default)
@@ -52,7 +52,7 @@ def get_env(key: str, default: Optional[str] = None) -> Optional[str]:
     return v
 
 
-def list_configs(configs_dir: Optional[Path] = None) -> list[str]:
+def list_configs(configs_dir: Path | None = None) -> list[str]:
     base = configs_dir or CONFIGS_DIR
     if not base.exists():
         return []

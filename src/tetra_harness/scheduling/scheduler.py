@@ -14,17 +14,18 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 _log = logging.getLogger("tetra.scheduling.scheduler")
 
 try:
+    from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
     from apscheduler.triggers.cron import CronTrigger
     from apscheduler.triggers.interval import IntervalTrigger
-    from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
     _APS_OK = True
 except Exception as _e:  # pragma: no cover

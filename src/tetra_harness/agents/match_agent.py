@@ -9,7 +9,7 @@ server down 时降级: 返回 ok=False + 入降级队列 (上层 pipeline 处理
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -40,7 +40,7 @@ class MatchAgent(Agent):
         if not order.get("order_id"):
             return self._fail("missing order.order_id")
 
-        base_url: Optional[str] = (
+        base_url: str | None = (
             payload.get("server_url")
             or config.get("server_url")
             or get_env("TETRA_SERVER_URL")

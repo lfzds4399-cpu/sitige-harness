@@ -84,7 +84,7 @@ async def _run_subprocess(cmd: list[str], cwd: Path | None = None, timeout: int 
     )
     try:
         out, err = await asyncio.wait_for(proc.communicate(), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         proc.kill()
         return -1, "", f"timeout after {timeout}s"
     return (
@@ -240,7 +240,7 @@ async def dlq_retry_worker(batch: int = 10) -> dict:
                 ok_n += 1
             else:
                 fail_n += 1
-        except Exception as e:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             _log.exception("DLQ 重试 %s 异常", it.id)
             fail_n += 1
     return {"retried": len(items), "ok": ok_n, "fail": fail_n, "ts": datetime.now().isoformat()}

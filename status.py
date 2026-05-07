@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """四面体电竞 · 项目状态薄壳.
 
 优先调 `python -m tetra_harness status` (CLI 由基建 agent 提供).
@@ -30,7 +29,7 @@ if HARNESS_SRC.exists() and str(HARNESS_SRC) not in sys.path:
 # 优先调 CLI; 失败 fallback 到原版渲染
 def _try_cli() -> bool:
     try:
-        from tetra_harness.cli import app  # type: ignore
+        pass  # type: ignore
     except Exception:
         return False
     try:

@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 StageStatus = Literal["pending", "running", "done", "failed", "skipped"]
 
@@ -22,7 +22,7 @@ def _now() -> str:
 class Manifest:
     """一个 artifact 的运行状态档."""
 
-    def __init__(self, path: Path, artifact: Optional[str] = None):
+    def __init__(self, path: Path, artifact: str | None = None):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.data: dict[str, Any] = {
@@ -73,7 +73,7 @@ class Manifest:
         self.data["stages"][stage] = entry
         self.save()
 
-    def get(self, stage: str) -> Optional[dict[str, Any]]:
+    def get(self, stage: str) -> dict[str, Any] | None:
         return self.data["stages"].get(stage)
 
     def is_done(self, stage: str) -> bool:
@@ -122,7 +122,7 @@ class Manifest:
         return t
 
 
-def manifest_for(pipeline: str, root: Optional[Path] = None) -> Manifest:
+def manifest_for(pipeline: str, root: Path | None = None) -> Manifest:
     """便捷构造: data/<pipeline>/manifest.json."""
     base = (root or Path("data")) / pipeline
     return Manifest(base / "manifest.json", artifact=pipeline)

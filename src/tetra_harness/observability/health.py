@@ -20,8 +20,8 @@ import os
 import platform
 import sys
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Awaitable, Callable
 
 from tetra_harness import __version__
 
@@ -38,7 +38,7 @@ except ImportError:  # pragma: no cover
     _log.warning("fastapi 未安装, health.router = None. "
                  "pip install fastapi 启用.")
 
-from tetra_harness.observability.metrics import render_metrics
+from tetra_harness.observability.metrics import render_metrics  # noqa: E402
 
 # ============================================================
 # 启动元信息
@@ -97,7 +97,7 @@ async def _run_check(entry: _CheckEntry) -> dict:
     t0 = time.perf_counter()
     try:
         ok, detail = await asyncio.wait_for(entry.check(), timeout=entry.timeout_sec)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         ok, detail = False, f"timeout >{entry.timeout_sec}s"
     except Exception as e:  # noqa: BLE001
         ok, detail = False, f"{type(e).__name__}: {e}"

@@ -14,8 +14,8 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
-from tetra_harness.agents.content_agent import ContentAgent
 from tetra_harness.agents.compliance_agent import ComplianceAgent
+from tetra_harness.agents.content_agent import ContentAgent
 from tetra_harness.config import HARNESS_ROOT
 from tetra_harness.pipelines.base import Pipeline, Stage
 

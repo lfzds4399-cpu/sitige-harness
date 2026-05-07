@@ -24,8 +24,8 @@ from sqlalchemy import pool  # noqa: E402
 from sqlalchemy.engine import Connection  # noqa: E402
 from sqlalchemy.ext.asyncio import async_engine_from_config  # noqa: E402
 
-from tetra_harness.storage.db import Base, DEFAULT_URL  # noqa: E402
 from tetra_harness.storage import models  # noqa: F401,E402  确保 model 已注册
+from tetra_harness.storage.db import DEFAULT_URL, Base  # noqa: E402
 
 config = context.config
 

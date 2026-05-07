@@ -17,24 +17,23 @@
 from __future__ import annotations
 
 from .base import (
+    EXEMPT_CONTEXT_TOKENS,
     Finding,
     ValidationResult,
     Validator,
-    EXEMPT_CONTEXT_TOKENS,
+    iter_text_files,
     line_is_exempt,
     safe_read,
-    iter_text_files,
 )
-from .file_existence import FileExistenceValidator
-from .secret_scanner import SecretScannerValidator
-from .compliance import ComplianceValidator
-from .legal_doc import LegalDocValidator
-from .risk import RiskValidator
-from .content_quality import ContentQualityValidator
-from .pricing import PricingValidator
-from .env_keys import EnvKeysValidator
 from .build_health import BuildHealthValidator
-
+from .compliance import ComplianceValidator
+from .content_quality import ContentQualityValidator
+from .env_keys import EnvKeysValidator
+from .file_existence import FileExistenceValidator
+from .legal_doc import LegalDocValidator
+from .pricing import PricingValidator
+from .risk import RiskValidator
+from .secret_scanner import SecretScannerValidator
 
 # 默认全部 validator (build_health 默认 enabled=False, 由 config 控制)
 ALL_VALIDATORS: list[type[Validator]] = [

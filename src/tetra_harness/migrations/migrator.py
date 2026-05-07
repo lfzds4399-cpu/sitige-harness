@@ -21,7 +21,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import ClassVar
 
-from tetra_harness._version import __version__ as CURRENT_VERSION
+from tetra_harness._version import __version__ as CURRENT_VERSION  # noqa: N812
 
 _log = logging.getLogger("tetra.migrator")
 

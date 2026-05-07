@@ -7,12 +7,12 @@ env ARTIFACT_PROVIDER:  qiniu / oss / cos / local  (默认 local).
 from __future__ import annotations
 
 import asyncio
+import builtins
 import logging
 import os
 import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Optional, Union
 
 _log = logging.getLogger("tetra.artifact")
 
@@ -25,8 +25,8 @@ class ArtifactStore(ABC):
     async def put(
         self,
         key: str,
-        content: Union[bytes, "Path"],
-        metadata: Optional[dict] = None,
+        content: bytes | Path,
+        metadata: dict | None = None,
     ) -> str:
         """存对象, 返回可访问 URL."""
 
@@ -37,7 +37,7 @@ class ArtifactStore(ABC):
     async def delete(self, key: str) -> None: ...
 
     @abstractmethod
-    async def list(self, prefix: str) -> List[str]: ...
+    async def list(self, prefix: str) -> builtins.list[str]: ...
 
     @abstractmethod
     async def presign_url(self, key: str, expires_sec: int = 3600) -> str: ...
@@ -47,7 +47,7 @@ class ArtifactStore(ABC):
 class LocalArtifactStore(ArtifactStore):
     """本地文件系统 — 默认 data/artifacts/."""
 
-    def __init__(self, root: Union[str, Path] = "data/artifacts") -> None:
+    def __init__(self, root: str | Path = "data/artifacts") -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
 
@@ -59,8 +59,8 @@ class LocalArtifactStore(ArtifactStore):
     async def put(
         self,
         key: str,
-        content: Union[bytes, Path],
-        metadata: Optional[dict] = None,
+        content: bytes | Path,
+        metadata: dict | None = None,
     ) -> str:
         p = self._path(key)
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -89,10 +89,10 @@ class LocalArtifactStore(ArtifactStore):
 
         await asyncio.to_thread(_del)
 
-    async def list(self, prefix: str) -> List[str]:
+    async def list(self, prefix: str) -> builtins.list[str]:
         base = self._path(prefix)
 
-        def _list() -> List[str]:
+        def _list() -> list[str]:
             if base.is_dir():
                 return [
                     str(p.relative_to(self.root).as_posix())
@@ -128,7 +128,7 @@ class QiniuArtifactStore(ArtifactStore):
         try:
             from qiniu import Auth  # type: ignore[import-not-found]
         except Exception as e:
-            raise RuntimeError(f"qiniu SDK 未安装: {e!r}")
+            raise RuntimeError(f"qiniu SDK 未安装: {e!r}") from e
 
         self.bucket = bucket
         self.domain = domain.rstrip("/")
@@ -139,8 +139,8 @@ class QiniuArtifactStore(ArtifactStore):
     async def put(
         self,
         key: str,
-        content: Union[bytes, Path],
-        metadata: Optional[dict] = None,
+        content: bytes | Path,
+        metadata: dict | None = None,
     ) -> str:
         from qiniu import put_data, put_file  # type: ignore[import-not-found]
 
@@ -180,12 +180,12 @@ class QiniuArtifactStore(ArtifactStore):
 
         await asyncio.to_thread(_del)
 
-    async def list(self, prefix: str) -> List[str]:
+    async def list(self, prefix: str) -> builtins.list[str]:
         from qiniu import BucketManager  # type: ignore[import-not-found]
 
         bm = BucketManager(self.auth)
 
-        def _list() -> List[str]:
+        def _list() -> list[str]:
             ret, eof, info = bm.list(self.bucket, prefix=prefix, limit=1000)
             if info.status_code != 200 or not ret:
                 return []
@@ -212,7 +212,7 @@ class AliyunOSSArtifactStore(ArtifactStore):
         try:
             import oss2  # type: ignore[import-not-found]
         except Exception as e:
-            raise RuntimeError(f"oss2 SDK 未安装: {e!r}")
+            raise RuntimeError(f"oss2 SDK 未安装: {e!r}") from e
 
         self._oss2 = oss2
         self.endpoint = endpoint
@@ -223,8 +223,8 @@ class AliyunOSSArtifactStore(ArtifactStore):
     async def put(
         self,
         key: str,
-        content: Union[bytes, Path],
-        metadata: Optional[dict] = None,
+        content: bytes | Path,
+        metadata: dict | None = None,
     ) -> str:
         def _upload() -> None:
             headers = None
@@ -249,8 +249,8 @@ class AliyunOSSArtifactStore(ArtifactStore):
     async def delete(self, key: str) -> None:
         await asyncio.to_thread(self.bucket.delete_object, key)
 
-    async def list(self, prefix: str) -> List[str]:
-        def _list() -> List[str]:
+    async def list(self, prefix: str) -> builtins.list[str]:
+        def _list() -> list[str]:
             return [
                 obj.key
                 for obj in self._oss2.ObjectIterator(self.bucket, prefix=prefix)
@@ -278,7 +278,7 @@ class TencentCOSArtifactStore(ArtifactStore):
         try:
             from qcloud_cos import CosConfig, CosS3Client  # type: ignore[import-not-found]
         except Exception as e:
-            raise RuntimeError(f"cos-python-sdk-v5 未安装: {e!r}")
+            raise RuntimeError(f"cos-python-sdk-v5 未安装: {e!r}") from e
 
         self.bucket = bucket
         self.region = region
@@ -288,8 +288,8 @@ class TencentCOSArtifactStore(ArtifactStore):
     async def put(
         self,
         key: str,
-        content: Union[bytes, Path],
-        metadata: Optional[dict] = None,
+        content: bytes | Path,
+        metadata: dict | None = None,
     ) -> str:
         def _upload() -> None:
             extra = {"Metadata": metadata} if metadata else {}
@@ -320,8 +320,8 @@ class TencentCOSArtifactStore(ArtifactStore):
             self.client.delete_object, Bucket=self.bucket, Key=key
         )
 
-    async def list(self, prefix: str) -> List[str]:
-        def _list() -> List[str]:
+    async def list(self, prefix: str) -> builtins.list[str]:
+        def _list() -> list[str]:
             resp = self.client.list_objects(Bucket=self.bucket, Prefix=prefix)
             return [c["Key"] for c in resp.get("Contents", [])]
 
@@ -340,7 +340,7 @@ class TencentCOSArtifactStore(ArtifactStore):
 
 
 # ---------- factory ----------
-_singleton: Optional[ArtifactStore] = None
+_singleton: ArtifactStore | None = None
 
 
 def _build_from_env() -> ArtifactStore:

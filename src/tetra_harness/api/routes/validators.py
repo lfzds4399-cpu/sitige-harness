@@ -12,7 +12,7 @@ from __future__ import annotations
 import time
 from collections import deque
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
@@ -56,9 +56,9 @@ def list_validators(admin: dict = Depends(get_admin)) -> list[dict]:
 
 @router.get("/findings", response_model=FindingsQueryResp)
 def query_findings(
-    since: Optional[float] = Query(None, description="unix ts; only ts ≥ since"),
-    severity: Optional[str] = Query(None, pattern="^(info|warn|error)$"),
-    validator: Optional[str] = Query(None),
+    since: float | None = Query(None, description="unix ts; only ts ≥ since"),
+    severity: str | None = Query(None, pattern="^(info|warn|error)$"),
+    validator: str | None = Query(None),
     limit: int = Query(200, ge=1, le=2000),
     admin: dict = Depends(get_admin),
 ) -> dict:

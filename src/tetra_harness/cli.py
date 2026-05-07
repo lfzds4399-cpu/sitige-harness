@@ -3,10 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import importlib
-import os
 import sys
-from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -15,7 +12,6 @@ from rich.table import Table
 from tetra_harness import __version__
 from tetra_harness.config import (
     HARNESS_ROOT,
-    CONFIGS_DIR,
     get_env,
     list_configs,
     load_config,
@@ -48,7 +44,7 @@ if sys.platform == "win32":
 # ============================================================
 @app.command(help="查看 manifest 状态 (各 pipeline 各 stage)")
 def status(
-    pipeline: Optional[str] = typer.Option(None, "--pipeline", "-p", help="只看某 pipeline"),
+    pipeline: str | None = typer.Option(None, "--pipeline", "-p", help="只看某 pipeline"),
 ) -> None:
     data_dir = HARNESS_ROOT / "data"
     if not data_dir.exists():
@@ -132,7 +128,7 @@ def doctor() -> None:
     ]
     for k in required_keys:
         v = get_env(k)
-        ok: Optional[bool]
+        ok: bool | None
         if v:
             ok = True
             detail = "set"
@@ -245,8 +241,8 @@ def doctor() -> None:
 def run(
     pipeline: str = typer.Argument(..., help="pipeline 名 (e.g. content_publish)"),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="console 仅 WARNING+"),
-    config: Optional[str] = typer.Option(None, "--config", "-c", help="configs/<name>.yaml"),
-    stage: Optional[str] = typer.Option(None, "--stage", "-s", help="只跑指定 stage"),
+    config: str | None = typer.Option(None, "--config", "-c", help="configs/<name>.yaml"),
+    stage: str | None = typer.Option(None, "--stage", "-s", help="只跑指定 stage"),
 ) -> None:
     log_dir = HARNESS_ROOT / "logs"
     logger = setup_logging(name="tetra", quiet=quiet, log_dir=log_dir)
@@ -259,7 +255,7 @@ def run(
             f"[red]找不到 configs/{cfg_name}.yaml[/red]\n"
             f"可用 configs: {list_configs() or '(none)'}"
         )
-        raise typer.Exit(2)
+        raise typer.Exit(2) from None
 
     # 动态 import pipelines.<pipeline>
     mod_name = f"tetra_harness.pipelines.{pipeline}"
@@ -270,7 +266,7 @@ def run(
             f"[red]pipeline 模块不存在: {mod_name}[/red]\n"
             "(pipelines agent 尚未交付; 基建层已就位等接入)"
         )
-        raise typer.Exit(2)
+        raise typer.Exit(2) from None
 
     if not hasattr(mod, "run"):
         console.print(f"[red]{mod_name} 缺 run(config, stage=None, logger=None) 入口[/red]")
@@ -281,7 +277,7 @@ def run(
         mod.run(config=cfg, stage=stage, logger=logger)
     except Exception as e:
         logger.exception("pipeline 失败: %s", e)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 # ============================================================
@@ -289,7 +285,7 @@ def run(
 # ============================================================
 @app.command(help="跑 validators/audit (兼容旧 audit.py 145 检查)")
 def audit(
-    validator: Optional[str] = typer.Option(None, "--validator", "-v", help="只跑指定 validator"),
+    validator: str | None = typer.Option(None, "--validator", "-v", help="只跑指定 validator"),
     report: bool = typer.Option(False, "--report", "-r", help="写 last-audit.json"),
     strict: bool = typer.Option(False, "--strict", help="warn 当 fail (CI 用)"),
 ) -> None:
@@ -386,7 +382,6 @@ def version_check() -> None:
 @app.command(name="self-test", help="跑 SKILL self-audit 5 项 + 内部 invariants")
 def self_test() -> None:
     """SKILL harness-engineering 五项自检 (E1-E5 教训对应)."""
-    from tetra_harness.utils.subprocess_safe import safe_run as _safe_run
     rows: list[tuple[str, str, str]] = []  # (sym, name, detail)
 
     # 1. 标准目录: configs/ data/ logs/ src/ tests/ docs/ 全在
@@ -411,8 +406,9 @@ def self_test() -> None:
 
     # 3. quiet logging (E3) — logging_setup 含 quiet 形参
     try:
-        from tetra_harness import logging_setup as _ls
         import inspect
+
+        from tetra_harness import logging_setup as _ls
         sig = inspect.signature(_ls.setup_logging)
         ok = "quiet" in sig.parameters
         rows.append(

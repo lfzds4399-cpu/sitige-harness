@@ -33,7 +33,7 @@ def _id_card_valid(idn: str) -> bool:
     body, last = idn[:17], idn[17].upper()
     if not body.isdigit():
         return False
-    s = sum(int(c) * w for c, w in zip(body, _ID_WEIGHTS))
+    s = sum(int(c) * w for c, w in zip(body, _ID_WEIGHTS, strict=True))
     return _ID_CHECK[s % 11] == last
 
 

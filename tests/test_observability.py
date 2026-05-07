@@ -13,7 +13,6 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -406,6 +405,7 @@ class TestThresholds:
 class TestConfigs:
     def test_observability_yaml_loads(self):
         from pathlib import Path
+
         import yaml
         p = Path(__file__).resolve().parent.parent / "configs" / "observability.yaml"
         assert p.exists(), f"missing {p}"

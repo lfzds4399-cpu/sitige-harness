@@ -13,8 +13,8 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 try:
     from sqlalchemy import (
@@ -48,7 +48,7 @@ def _uuid_str() -> str:
 
 def _utcnow() -> datetime:
     # Py3.12+ 推荐 timezone-aware; ORM 字段 DateTime 默认会脱 tz 落库, 行为对齐.
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 # 状态字面量 (避免依赖 Literal 在 ORM 字段)
@@ -213,8 +213,8 @@ def all_models() -> list[type]:
 
 
 # Helper: 给 token 生成 hash (避免明文存)
-def hash_token(token: str, salt: Optional[str] = None) -> str:
+def hash_token(token: str, salt: str | None = None) -> str:
     import hashlib
 
     salt = salt or "tetra-harness"
-    return hashlib.sha256(f"{salt}::{token}".encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{salt}::{token}".encode()).hexdigest()

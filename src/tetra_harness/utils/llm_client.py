@@ -6,8 +6,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Iterable, Literal, Optional
+from typing import Any, Literal
 
 from tetra_harness.config import get_env
 from tetra_harness.utils.cost_tracker import CostTracker
@@ -97,9 +98,9 @@ class LLMClient:
     def __init__(
         self,
         provider: Provider = "deepseek",
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        model: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        model: str | None = None,
     ):
         if provider not in PROVIDERS:
             raise ValueError(
@@ -114,7 +115,7 @@ class LLMClient:
         self._client: Any = None  # lazy AsyncOpenAI
 
     @classmethod
-    def from_env(cls) -> "LLMClient":
+    def from_env(cls) -> LLMClient:
         provider = (get_env("LLM_DEFAULT_PROVIDER", "deepseek") or "deepseek").lower()
         if provider not in PROVIDERS:
             _log.warning("LLM_DEFAULT_PROVIDER=%s 不在白名单, 回退 deepseek", provider)
@@ -149,7 +150,7 @@ class LLMClient:
     async def chat(
         self,
         messages: Iterable[dict[str, Any]],
-        model: Optional[str] = None,
+        model: str | None = None,
         **kw: Any,
     ) -> str:
         """OpenAI 兼容 chat.completions, 返回首条 choice 的 content."""

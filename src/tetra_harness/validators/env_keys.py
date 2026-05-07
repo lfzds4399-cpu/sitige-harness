@@ -6,10 +6,8 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, safe_read
-
+from .base import ValidationResult, Validator, safe_read
 
 # 🔴 标记 = 必填 (用户对约定: 8 项必填)
 REQUIRED_MARKER_PATTERNS = (
@@ -76,7 +74,7 @@ class EnvKeysValidator(Validator):
     name = "env_keys"
     description = "必填 env key 检查 (基于 .env.全栈.example 中 🔴 标记)"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             example_path = project_root / ".env.全栈.example"

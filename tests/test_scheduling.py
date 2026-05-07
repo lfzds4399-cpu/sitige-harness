@@ -23,8 +23,8 @@ apscheduler = pytest.importorskip("apscheduler")
 from tetra_harness.scheduling.dlq import (  # noqa: E402
     BACKOFF_MINUTES,
     DLQ,
-    DLQItem,
     MAX_RETRIES,
+    DLQItem,
 )
 from tetra_harness.scheduling.idempotency import (  # noqa: E402
     IdempotencyStore,

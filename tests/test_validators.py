@@ -4,10 +4,7 @@
 """
 from __future__ import annotations
 
-import os
-import shutil
 import sys
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -19,12 +16,17 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from tetra_harness.validators import (  # noqa: E402
-    ComplianceValidator, ContentQualityValidator, EnvKeysValidator,
-    FileExistenceValidator, LegalDocValidator, PricingValidator,
-    RiskValidator, SecretScannerValidator, BuildHealthValidator,
+    BuildHealthValidator,
+    ComplianceValidator,
+    ContentQualityValidator,
+    EnvKeysValidator,
+    FileExistenceValidator,
+    LegalDocValidator,
+    PricingValidator,
+    RiskValidator,
+    SecretScannerValidator,
 )
 from tetra_harness.validators.base import line_is_exempt  # noqa: E402
-
 
 REAL_ROOT = HERE.parent.parent  # repo root
 

@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 from tetra_harness.agents.intel_agent import IntelAgent
-from tetra_harness.agents.screen_agent import ScreenAgent
 from tetra_harness.config import HARNESS_ROOT
 from tetra_harness.pipelines.base import Pipeline, Stage
 
@@ -101,7 +100,6 @@ async def _stage_qualify(ctx: dict, config: dict) -> dict:
     cands = ctx.get("candidates") or []
     required = config.get("kyc_fields", ["business_license", "legal_rep", "years"])
     qualified, rejected = [], []
-    agent = ScreenAgent()
     for c in cands:
         # mock 输入: 假设候选人提交了 mock 资料
         mock_kyc = {

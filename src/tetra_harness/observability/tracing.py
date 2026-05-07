@@ -36,7 +36,8 @@ import functools
 import inspect
 import logging
 import os
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 _log = logging.getLogger("tetra.tracing")
 

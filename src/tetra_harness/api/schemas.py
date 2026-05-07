@@ -5,8 +5,7 @@
 """
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -31,7 +30,7 @@ class PipelineMeta(BaseModel):
 
 class RunPipelineReq(BaseModel):
     config: dict[str, Any] = Field(default_factory=dict)
-    only_stage: Optional[str] = None
+    only_stage: str | None = None
     async_mode: bool = True
 
 
@@ -41,7 +40,7 @@ class RunPipelineResp(BaseModel):
     pipeline: str
     started_at: str
     async_mode: bool
-    detail: Optional[str] = None
+    detail: str | None = None
 
 
 class RunSummary(BaseModel):
@@ -49,9 +48,9 @@ class RunSummary(BaseModel):
     pipeline: str
     status: str  # pending / running / done / failed / cancelled
     started_at: str
-    ended_at: Optional[str] = None
-    duration_ms: Optional[float] = None
-    cost_usd: Optional[float] = None
+    ended_at: str | None = None
+    duration_ms: float | None = None
+    cost_usd: float | None = None
     stages: list[dict[str, Any]] = []
 
 
@@ -84,8 +83,8 @@ class FindingsQueryResp(BaseModel):
 # ---------- manifest ----------
 class ManifestResp(BaseModel):
     artifact: str
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: str | None = None
+    updated_at: str | None = None
     stages: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -94,11 +93,11 @@ class WsEvent(BaseModel):
     ts: float
     run_id: str
     pipeline: str
-    stage: Optional[str] = None
-    status: Optional[str] = None
-    log: Optional[str] = None
-    elapsed_ms: Optional[float] = None
-    error: Optional[str] = None
+    stage: str | None = None
+    status: str | None = None
+    log: str | None = None
+    elapsed_ms: float | None = None
+    error: str | None = None
 
 
 __all__ = [

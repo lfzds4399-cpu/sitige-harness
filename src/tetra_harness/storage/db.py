@@ -9,9 +9,9 @@
 from __future__ import annotations
 
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncIterator, Optional
 
 try:  # 软依赖
     from sqlalchemy.ext.asyncio import (
@@ -59,7 +59,7 @@ def _ensure_sqlite_dir(url: str) -> None:
 class Database:
     """全局数据库门面."""
 
-    def __init__(self, url: Optional[str] = None, *, echo: bool = False) -> None:
+    def __init__(self, url: str | None = None, *, echo: bool = False) -> None:
         if not _SQLA_OK:
             raise RuntimeError(
                 f"sqlalchemy/asyncpg/aiosqlite 未安装: {_IMPORT_ERR!r}"
@@ -79,7 +79,7 @@ class Database:
         )
 
     @asynccontextmanager
-    async def session(self) -> AsyncIterator["AsyncSession"]:
+    async def session(self) -> AsyncIterator[AsyncSession]:
         async with self.session_maker() as s:
             yield s
 
@@ -96,7 +96,7 @@ class Database:
         await self.engine.dispose()
 
 
-_singleton: Optional[Database] = None
+_singleton: Database | None = None
 
 
 def get_db() -> Database:

@@ -9,7 +9,6 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 try:
     from rich.logging import RichHandler
@@ -25,7 +24,7 @@ _FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 def setup_logging(
     name: str = "tetra",
     quiet: bool = False,
-    log_dir: Optional[Path] = None,
+    log_dir: Path | None = None,
     level: str = "INFO",
 ) -> logging.Logger:
     """配置 logger.
@@ -50,7 +49,7 @@ def setup_logging(
         handlers.append(ch)
 
     # ---- file (可选) ----
-    log_path: Optional[Path] = None
+    log_path: Path | None = None
     if log_dir is not None:
         log_dir = Path(log_dir)
         log_dir.mkdir(parents=True, exist_ok=True)

@@ -9,7 +9,7 @@ import threading
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 DEFAULT_LOG = Path("data/_costs/cost_log.jsonl")
 
@@ -44,7 +44,7 @@ class _CostTrackerImpl:
             with self.log_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
-    def report(self, since: Optional[datetime] = None) -> dict[str, Any]:
+    def report(self, since: datetime | None = None) -> dict[str, Any]:
         """按 provider/model 聚合 usd / tokens."""
         if not self.log_path.exists():
             return {"total_usd": 0.0, "by_provider": {}, "by_model": {}, "records": 0}

@@ -5,13 +5,13 @@ SKILL E5 上下文豁免: 含 "禁止/禁用/不准/避免/严禁/不要/不说/
 """
 from __future__ import annotations
 
-import re
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Iterator, Literal, Optional
+from typing import Literal
 
 Severity = Literal["info", "warn", "error"]
 
@@ -29,8 +29,8 @@ class Finding:
     severity: Severity
     code: str  # e.g. "MISSING_FILE" / "BANNED_WORD" / "WEAK_PRICE"
     message: str
-    file: Optional[Path] = None
-    line: Optional[int] = None
+    file: Path | None = None
+    line: int | None = None
     detail: str = ""
 
     def to_dict(self) -> dict:
@@ -66,7 +66,7 @@ class ValidationResult:
         # ok 不进 findings, 节省内存. 仅 verbose 模式下另行渲染.
 
     def add(self, severity: Severity, code: str, message: str, *,
-            file: Optional[Path] = None, line: Optional[int] = None,
+            file: Path | None = None, line: int | None = None,
             detail: str = "") -> None:
         if severity == "info":
             # info 进 findings 但不计入 ok/warn/error
@@ -98,7 +98,7 @@ class Validator(ABC):
     description: str = ""
 
     @abstractmethod
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         """跑验证. project_root 是仓库根, config 来自 configs/audit.yaml."""
         ...
 

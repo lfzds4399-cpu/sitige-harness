@@ -7,9 +7,10 @@ from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Optional
+from typing import Any
 
 
 @dataclass
@@ -27,7 +28,7 @@ class AgentResult:
     output: Any = None
     cost_usd: float = 0.0
     elapsed_ms: float = 0.0
-    error: Optional[str] = None
+    error: str | None = None
     meta: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

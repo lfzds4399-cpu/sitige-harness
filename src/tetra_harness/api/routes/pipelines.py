@@ -10,10 +10,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import time
-from typing import Any, Optional
+from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from tetra_harness.pipelines import PIPELINES, get_pipeline
 
@@ -81,7 +80,7 @@ async def _run_pipeline_async(
     pipeline_name: str,
     run_id: str,
     config: dict,
-    only_stage: Optional[str],
+    only_stage: str | None,
 ) -> None:
     """后台 task: 跑 pipeline + 每 stage 发 WS 事件 + 写 run record."""
     pipeline = get_pipeline(pipeline_name)

@@ -13,7 +13,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Protocol, Union
+from typing import Any, Protocol
 
 try:
     import yaml  # pyproject 已声明 pyyaml
@@ -28,7 +28,7 @@ _log = logging.getLogger("tetra.secrets")
 class SecretProvider(Protocol):
     """统一 secret provider 协议."""
 
-    def get(self, key: str, default: Optional[str] = None) -> Optional[str]: ...
+    def get(self, key: str, default: str | None = None) -> str | None: ...
 
 
 # ---------- env ----------
@@ -38,7 +38,7 @@ class EnvSecret:
     def __init__(self, prefix: str = "") -> None:
         self.prefix = prefix
 
-    def get(self, key: str, default: Optional[str] = None) -> Optional[str]:
+    def get(self, key: str, default: str | None = None) -> str | None:
         full = f"{self.prefix}{key}" if self.prefix else key
         return os.environ.get(full, default)
 
@@ -54,15 +54,15 @@ class SopsSecret:
 
     def __init__(
         self,
-        encrypted_file: Union[str, Path],
+        encrypted_file: str | Path,
         *,
         timeout: int = 30,
     ) -> None:
         self.path = Path(encrypted_file)
         self.timeout = timeout
-        self._cache: Optional[Dict[str, Any]] = None
+        self._cache: dict[str, Any] | None = None
 
-    def _ensure_decrypted(self) -> Dict[str, Any]:
+    def _ensure_decrypted(self) -> dict[str, Any]:
         if self._cache is not None:
             return self._cache
         if not self.path.exists():
@@ -108,7 +108,7 @@ class SopsSecret:
         self._cache = data
         return self._cache
 
-    def get(self, key: str, default: Optional[str] = None) -> Optional[str]:
+    def get(self, key: str, default: str | None = None) -> str | None:
         d = self._ensure_decrypted()
         # 支持 a.b.c 路径
         cur: Any = d
@@ -132,7 +132,7 @@ class CompositeSecret:
     def __init__(self, providers: list) -> None:
         self.providers = providers
 
-    def get(self, key: str, default: Optional[str] = None) -> Optional[str]:
+    def get(self, key: str, default: str | None = None) -> str | None:
         for p in self.providers:
             try:
                 v = p.get(key, None)
@@ -145,7 +145,7 @@ class CompositeSecret:
 
 
 # ---------- factory ----------
-_singleton: Optional[SecretProvider] = None
+_singleton: SecretProvider | None = None
 
 
 def _build_from_env() -> SecretProvider:

@@ -6,17 +6,17 @@
 from __future__ import annotations
 
 import os
-import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult
+from .base import ValidationResult, Validator
 
 
 def _safe_run(cmd: list[str], cwd: Path, timeout: int) -> tuple[int, str, str]:
+    # On Windows `npm`/`npm.cmd` is only resolvable via the shell; commands are
+    # hard-coded constants (BUILD_TARGETS), never user-supplied.
     from tetra_harness.utils.subprocess_safe import safe_run
-    return safe_run(cmd, cwd=str(cwd), timeout=timeout, shell=(os.name == "nt"))
+    return safe_run(cmd, cwd=str(cwd), timeout=timeout, shell=(os.name == "nt"))  # nosec B604
 
 
 # (sub_path, cmd, timeout_sec, optional)
@@ -36,7 +36,7 @@ class BuildHealthValidator(Validator):
     name = "build_health"
     description = "web/server/bot/kook/miniprogram 5 模块 build/import 健康"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         cfg = (config or {}).get(self.name, {})
         if not cfg.get("enabled", False):

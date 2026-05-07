@@ -22,18 +22,19 @@ import functools
 import inspect
 import logging
 import time
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 _log = logging.getLogger("tetra.metrics")
 
 # ---------- 第三方库可选 ----------
 try:
     from prometheus_client import (  # type: ignore[import-not-found]
+        REGISTRY,
         CollectorRegistry,
         Counter,
         Gauge,
         Histogram,
-        REGISTRY,
         generate_latest,
     )
     from prometheus_client.exposition import CONTENT_TYPE_LATEST  # type: ignore[import-not-found]

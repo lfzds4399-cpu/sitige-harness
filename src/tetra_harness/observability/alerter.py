@@ -38,8 +38,9 @@ import smtplib
 import time
 import urllib.parse
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Literal
+from typing import Any, Literal
 
 _log = logging.getLogger("tetra.alerter")
 
@@ -73,8 +74,8 @@ class Alerter(ABC):
     async def send(self, level: Level, title: str, body: str) -> bool:
         """发送告警. 返回是否成功."""
 
-    async def close(self) -> None:
-        """收尾 (HTTP client 关闭等)."""
+    async def close(self) -> None:  # noqa: B027 — concrete subclasses override; default no-op
+        """收尾 (HTTP client 关闭等). 默认 no-op, 有 HTTP 资源的子类覆盖."""
 
 
 # ============================================================
@@ -335,7 +336,7 @@ class CompositeAlerter(Alerter):
             return_exceptions=True,
         )
         ok_any = False
-        for ch, r in zip(self.channels, results):
+        for ch, r in zip(self.channels, results, strict=True):
             if isinstance(r, Exception):
                 _log.error("[%s] exc: %s", ch.name, r)
             elif r:

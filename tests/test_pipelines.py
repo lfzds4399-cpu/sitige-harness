@@ -5,20 +5,20 @@
 """
 from __future__ import annotations
 
-import asyncio
 import json
-from pathlib import Path
-from typing import Any
 
 import pytest
 
-from tetra_harness.agents.base import AgentResult
 from tetra_harness.manifest import Manifest
 from tetra_harness.pipelines import (
-    ContentPipeline, RecruitPipeline, MatchPipeline,
-    CRMPipeline, CompliancePipeline, get_pipeline, PIPELINES,
+    PIPELINES,
+    CompliancePipeline,
+    ContentPipeline,
+    CRMPipeline,
+    MatchPipeline,
+    RecruitPipeline,
+    get_pipeline,
 )
-
 
 pytestmark = pytest.mark.asyncio
 

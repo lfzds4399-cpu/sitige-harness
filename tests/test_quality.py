@@ -40,7 +40,6 @@ def test_src_layout() -> None:
 
 def test_version_consistent() -> None:
     """_version.py 与 __init__.py 必须导一致."""
-    import importlib
     import sys
     if str(SRC_DIR.parent) not in sys.path:
         sys.path.insert(0, str(SRC_DIR.parent))
@@ -95,8 +94,11 @@ def test_ruff_clean() -> None:
 def test_mypy_utils_strict() -> None:
     if not shutil.which("mypy"):
         pytest.skip("mypy 未装; pip install -e '.[dev]'")
+    # --no-warn-unused-configs because we run on a single subpackage and the
+    # cross-module strict overrides (manifest, config) are intentionally unused
+    # in this slice.
     rc, out, err = _run(
-        ["mypy", "src/tetra_harness/utils/"],
+        ["mypy", "src/tetra_harness/utils/", "--no-warn-unused-configs"],
         cwd=HARNESS_ROOT,
     )
     assert rc == 0, f"mypy strict utils 失败:\n{out}\n{err}"

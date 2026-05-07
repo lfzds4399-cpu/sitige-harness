@@ -13,9 +13,9 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any
 
 from tetra_harness.manifest import Manifest, manifest_for
 
@@ -42,8 +42,8 @@ class StageResult:
     ok: bool
     output: Any = None
     elapsed_ms: float = 0.0
-    error: Optional[str] = None
-    skipped_reason: Optional[str] = None
+    error: str | None = None
+    skipped_reason: str | None = None
 
 
 @dataclass
@@ -90,9 +90,9 @@ class Pipeline:
     async def run_all(
         self,
         config: dict,
-        manifest: Optional[Manifest] = None,
-        only_stage: Optional[str] = None,
-        ctx: Optional[dict] = None,
+        manifest: Manifest | None = None,
+        only_stage: str | None = None,
+        ctx: dict | None = None,
     ) -> PipelineResult:
         """跑所有 stages (或仅 only_stage).
 
@@ -153,7 +153,7 @@ class Pipeline:
         t0 = time.perf_counter()
         try:
             output = await asyncio.wait_for(stage.runner(ctx, merged_cfg), timeout=timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return StageResult(
                 name=stage.name, ok=False,
                 error=f"timeout after {timeout}s",

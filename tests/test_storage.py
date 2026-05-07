@@ -9,9 +9,7 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -25,8 +23,8 @@ if str(_SRC) not in sys.path:
 
 # ---------- 软依赖判定 ----------
 try:
-    import sqlalchemy  # noqa: F401
     import aiosqlite  # noqa: F401
+    import sqlalchemy  # noqa: F401
 
     SQLA_OK = True
 except Exception:

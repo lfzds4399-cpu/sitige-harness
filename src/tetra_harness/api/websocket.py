@@ -18,7 +18,7 @@ import json
 import logging
 import time
 from collections import defaultdict, deque
-from typing import Any, Optional
+from typing import Any
 
 _log = logging.getLogger("tetra.api.ws")
 

@@ -5,14 +5,16 @@ import asyncio
 import sys
 from pathlib import Path
 
-import pytest
-
 HARNESS_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = HARNESS_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from tetra_harness.migrations.migrator import Migration, Migrator, _parse_semver
+from tetra_harness.migrations.migrator import (  # noqa: E402 — sys.path tweak above
+    Migration,
+    Migrator,
+    _parse_semver,
+)
 
 
 # ============================================================

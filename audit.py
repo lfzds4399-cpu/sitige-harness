@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """四面体电竞 · Harness 一键审核 (薄壳).
 
 内部走 tetra_harness.validators.file_existence + compliance + secret_scanner.

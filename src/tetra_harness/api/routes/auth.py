@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import os
 import secrets
-from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 
@@ -20,13 +19,13 @@ from ..schemas import LoginReq, LoginResp
 router = APIRouter()
 
 
-def _admin_token() -> Optional[str]:
+def _admin_token() -> str | None:
     return os.getenv("TETRA_ADMIN_TOKEN") or None
 
 
 def get_admin(
-    authorization: Optional[str] = Header(default=None),
-    x_admin_token: Optional[str] = Header(default=None),
+    authorization: str | None = Header(default=None),
+    x_admin_token: str | None = Header(default=None),
 ) -> dict:
     """Depends 守卫: 校验 Bearer 或 X-Admin-Token. 无 env 配置时 DEV 放行."""
     expected = _admin_token()
@@ -34,7 +33,7 @@ def get_admin(
         # DEV 模式: 不强校验, 但标记
         return {"role": "admin", "mode": "dev"}
 
-    token: Optional[str] = None
+    token: str | None = None
     if authorization and authorization.lower().startswith("bearer "):
         token = authorization.split(" ", 1)[1].strip()
     elif x_admin_token:

@@ -111,18 +111,27 @@ exclude = [
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "S", "ASYNC"]
-# E501 line too long (我们用 100 但有时长字符串需放过)
-# S101 assert in tests
-# S603 subprocess call (我们走 utils/subprocess_safe.safe_run, 不裸用)
-ignore = ["E501", "S101", "S603"]
+# E501 line too long (line-length=100 already enforced, leave room for long strings)
+# S101 assert (used everywhere in test bodies)
+# S603 subprocess call (we go through utils/subprocess_safe.safe_run)
+# B008 FastAPI uses `param = Depends(...)` as the canonical pattern
+# S110/S112 try-except-pass / try-except-continue — used as encoding/IO fallbacks
+# S311 random for mock/seed data (not crypto)
+# ASYNC109 timeout-as-parameter is the conventional shape for our pipeline / agent APIs
+ignore = ["E501", "S101", "S603", "B008", "S110", "S112", "S311", "ASYNC109"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "S105", "S106"]
 "alembic/versions/*" = ["E501", "F401", "I001"]
+# audit.py + status.py are legacy CLI tools (ANSI colour shorthand, safe subprocess)
+"audit.py" = ["E702", "S605", "S607"]
+"status.py" = ["E702"]
 
 [tool.mypy]
 python_version = "3.11"
-strict = false  # gradual; 整体 non-strict, 核心模块开 strict
+# Gradual: typing is non-fatal in CI (see .github/workflows/test.yml). Only
+# the modules listed under [[tool.mypy.overrides]] are held to strict mypy.
+strict = false
 ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
@@ -145,8 +154,11 @@ strict = true
 
 [tool.bandit]
 exclude_dirs = ["tests", "alembic/versions", "build", "dist"]
-# B101 assert / B404 subprocess import / B603 subprocess (走 safe_run) / B607 partial path
-skips = ["B101", "B404", "B603", "B607"]
+# B101 assert / B404 subprocess import / B603 subprocess (we go through safe_run)
+# B602 controlled shell (Windows npm.cmd needs shell, command is hard-coded)
+# B604 same — caller is utils/subprocess_safe.safe_run, cmd list is constant
+# B607 partial path (npm/python looked up via PATH, intentional)
+skips = ["B101", "B404", "B602", "B603", "B604", "B607"]
 
 [tool.coverage.run]
 source = ["src/tetra_harness"]

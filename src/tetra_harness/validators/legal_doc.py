@@ -5,10 +5,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, safe_read
-
+from .base import ValidationResult, Validator, safe_read
 
 # 文档 → [(必含关键词组, 红线名)]  — 任一组命中即算条款齐
 LEGAL_DOC_REQUIREMENTS: dict[str, list[tuple[tuple[str, ...], str]]] = {
@@ -112,7 +110,7 @@ class LegalDocValidator(Validator):
     name = "legal_doc"
     description = "11 份法务文档红线条款 (每文档 ≥4 项必含条款)"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             for doc, reqs in LEGAL_DOC_REQUIREMENTS.items():

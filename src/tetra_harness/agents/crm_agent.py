@@ -14,8 +14,9 @@ import logging
 import math
 import re
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any
 
 from tetra_harness.agents.base import Agent, AgentResult
 from tetra_harness.utils.llm_client import LLMClient
@@ -38,8 +39,7 @@ def _walk_files(root: Path) -> Iterable[Path]:
         return
     if not root.is_dir():
         return
-    for p in root.rglob("*.md"):
-        yield p
+    yield from root.rglob("*.md")
 
 
 def _chunk_text(path: Path, max_chars: int = 600) -> list[tuple[str, str]]:

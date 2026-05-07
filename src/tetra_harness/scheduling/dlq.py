@@ -22,7 +22,6 @@ import threading
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 _log = logging.getLogger("tetra.scheduling.dlq")
 
@@ -43,8 +42,8 @@ class DLQItem:
     payload: dict = field(default_factory=dict)
     error: str = ""
     retries: int = 0
-    next_retry_at: Optional[datetime] = None
-    final_at: Optional[datetime] = None
+    next_retry_at: datetime | None = None
+    final_at: datetime | None = None
     created_at: datetime = field(default_factory=datetime.now)
 
     def to_row(self) -> tuple:
@@ -60,7 +59,7 @@ class DLQItem:
         )
 
     @classmethod
-    def from_row(cls, row: tuple) -> "DLQItem":
+    def from_row(cls, row: tuple) -> DLQItem:
         (id_, job_name, payload_s, error, retries, next_s, final_s, created_s) = row
         return cls(
             id=id_,

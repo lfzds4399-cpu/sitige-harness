@@ -13,13 +13,12 @@
 """
 from __future__ import annotations
 
-from tetra_harness.pipelines.base import Pipeline, Stage, StageResult, PipelineResult
-from tetra_harness.pipelines.content_pipeline import ContentPipeline
-from tetra_harness.pipelines.recruit_pipeline import RecruitPipeline
-from tetra_harness.pipelines.match_pipeline import MatchPipeline
-from tetra_harness.pipelines.crm_pipeline import CRMPipeline
+from tetra_harness.pipelines.base import Pipeline, PipelineResult, Stage, StageResult
 from tetra_harness.pipelines.compliance_pipeline import CompliancePipeline
-
+from tetra_harness.pipelines.content_pipeline import ContentPipeline
+from tetra_harness.pipelines.crm_pipeline import CRMPipeline
+from tetra_harness.pipelines.match_pipeline import MatchPipeline
+from tetra_harness.pipelines.recruit_pipeline import RecruitPipeline
 
 PIPELINES: dict[str, type[Pipeline]] = {
     "content": ContentPipeline,

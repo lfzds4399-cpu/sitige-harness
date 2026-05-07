@@ -6,13 +6,14 @@ from __future__ import annotations
 
 import logging
 import subprocess
-from typing import Any, Sequence, Union
+from collections.abc import Sequence
+from typing import Any
 
 _log = logging.getLogger("tetra.subprocess")
 
 
 def safe_run(
-    cmd: Union[str, Sequence[str]],
+    cmd: str | Sequence[str],
     *,
     timeout: int = 300,
     cwd: Any = None,
@@ -20,7 +21,7 @@ def safe_run(
     check: bool = False,
     shell: bool = False,
     **kwargs: Any,
-) -> subprocess.CompletedProcess:
+) -> subprocess.CompletedProcess[str]:
     """安全执行 subprocess.
 
     强制:
@@ -37,6 +38,8 @@ def safe_run(
         kwargs.pop(k, None)
 
     try:
+        # `shell` is controlled by the caller; this wrapper exists *because*
+        # callers (Windows npm.cmd, a few CLI shellouts) explicitly need it.
         r = subprocess.run(
             cmd,
             capture_output=True,
@@ -46,10 +49,10 @@ def safe_run(
             timeout=timeout,
             cwd=cwd,
             env=env,
-            shell=shell,
+            shell=shell,  # noqa: S602 - caller-controlled, see docstring
             check=False,
             **kwargs,
-        )
+        )  # nosec B602
     except subprocess.TimeoutExpired as e:
         _log.error("subprocess TIMEOUT after %ss: %s", timeout, cmd)
         # 返回一个伪 CompletedProcess 方便调用方统一处理

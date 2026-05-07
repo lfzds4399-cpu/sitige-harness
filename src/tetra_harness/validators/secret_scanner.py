@@ -7,13 +7,14 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Optional
 
 from .base import (
-    Validator, ValidationResult, find_line_number,
-    iter_text_files, line_is_exempt, safe_read, shannon_entropy,
+    ValidationResult,
+    Validator,
+    iter_text_files,
+    line_is_exempt,
+    safe_read,
 )
-
 
 # 高置信 regex (低误报)
 SECRET_PATTERNS: list[tuple[str, re.Pattern, str]] = [
@@ -112,7 +113,7 @@ class SecretScannerValidator(Validator):
     name = "secret_scanner"
     description = "regex + entropy 扫私钥/API token/数据库裸密码/硬编码凭据"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             scanned_files = 0

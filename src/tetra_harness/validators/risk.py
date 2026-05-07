@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, safe_read
-
+from .base import ValidationResult, Validator, safe_read
 
 # 11 份 SOP 必含条款
 RISK_DOC_REQUIREMENTS: dict[str, list[tuple[tuple[str, ...], str]]] = {
@@ -93,7 +91,7 @@ class RiskValidator(Validator):
     name = "risk"
     description = "11 风控 SOP 红线条款检查 (实名 18 位/未保拦截/T+N/设备指纹)"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             for doc, reqs in RISK_DOC_REQUIREMENTS.items():

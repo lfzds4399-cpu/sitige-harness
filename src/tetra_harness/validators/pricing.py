@@ -10,10 +10,8 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, safe_read
-
+from .base import ValidationResult, Validator, safe_read
 
 # 业务 → 期望平台抽成 (从 partners/pricing/分成结构.md)
 EXPECTED_DEFAULT_TAKE_RATE = {
@@ -28,7 +26,7 @@ EXPECTED_DEFAULT_TAKE_RATE = {
 EXPECTED_TIERS = ["青铜", "白银", "黄金", "铂金", "钻石"]
 
 
-def _parse_table_row(text: str, label: str) -> Optional[list[float]]:
+def _parse_table_row(text: str, label: str) -> list[float] | None:
     """从 markdown 表格抓某一行的数字 (按 | 切, 取百分比)."""
     for line in text.splitlines():
         if label in line and "|" in line:
@@ -140,7 +138,7 @@ class PricingValidator(Validator):
     name = "pricing"
     description = "5×5 分成矩阵 / 押金阶梯 / 单位经济模型 一致性校验"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             pricing_doc = project_root / "partners/pricing/分成结构.md"

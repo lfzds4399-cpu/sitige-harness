@@ -16,7 +16,7 @@ import asyncio
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
@@ -32,17 +32,17 @@ class RunRecord:
     pipeline: str
     status: str = "pending"  # pending / running / done / failed / cancelled
     started_at: float = field(default_factory=time.time)
-    ended_at: Optional[float] = None
-    duration_ms: Optional[float] = None
-    cost_usd: Optional[float] = None
+    ended_at: float | None = None
+    duration_ms: float | None = None
+    cost_usd: float | None = None
     stages: list[dict[str, Any]] = field(default_factory=list)
-    error: Optional[str] = None
+    error: str | None = None
     cancelled: bool = False
-    task: Optional[Any] = None  # asyncio.Task 引用 (cancel 用)
+    task: Any | None = None  # asyncio.Task 引用 (cancel 用)
 
     def to_summary(self) -> dict[str, Any]:
         from datetime import datetime
-        def _iso(t: Optional[float]) -> Optional[str]:
+        def _iso(t: float | None) -> str | None:
             return datetime.fromtimestamp(t).isoformat(timespec="seconds") if t else None
         return {
             "run_id": self.run_id,
@@ -65,7 +65,7 @@ def new_run_id(pipeline: str) -> str:
     return f"{pipeline}-{int(time.time())}-{uuid.uuid4().hex[:6]}"
 
 
-async def register_run(pipeline: str, run_id: Optional[str] = None) -> RunRecord:
+async def register_run(pipeline: str, run_id: str | None = None) -> RunRecord:
     rid = run_id or new_run_id(pipeline)
     rec = RunRecord(run_id=rid, pipeline=pipeline, status="running")
     async with _LOCK:
@@ -73,7 +73,7 @@ async def register_run(pipeline: str, run_id: Optional[str] = None) -> RunRecord
     return rec
 
 
-async def update_run(run_id: str, **fields) -> Optional[RunRecord]:
+async def update_run(run_id: str, **fields) -> RunRecord | None:
     async with _LOCK:
         rec = _REGISTRY.get(run_id)
         if not rec:
@@ -86,10 +86,10 @@ async def update_run(run_id: str, **fields) -> Optional[RunRecord]:
 async def finish_run(
     run_id: str,
     status: str = "done",
-    error: Optional[str] = None,
-    stages: Optional[list[dict[str, Any]]] = None,
-    cost_usd: Optional[float] = None,
-) -> Optional[RunRecord]:
+    error: str | None = None,
+    stages: list[dict[str, Any]] | None = None,
+    cost_usd: float | None = None,
+) -> RunRecord | None:
     async with _LOCK:
         rec = _REGISTRY.get(run_id)
         if not rec:
@@ -105,13 +105,13 @@ async def finish_run(
         return rec
 
 
-def get_run(run_id: str) -> Optional[RunRecord]:
+def get_run(run_id: str) -> RunRecord | None:
     return _REGISTRY.get(run_id)
 
 
 def list_runs(
-    pipeline: Optional[str] = None,
-    status: Optional[str] = None,
+    pipeline: str | None = None,
+    status: str | None = None,
     limit: int = 50,
 ) -> list[RunRecord]:
     items = list(_REGISTRY.values())
@@ -146,8 +146,8 @@ async def cancel_run(run_id: str) -> bool:
 # ============================================================
 @router.get("/")
 def list_runs_endpoint(
-    pipeline: Optional[str] = Query(None),
-    status: Optional[str] = Query(None),
+    pipeline: str | None = Query(None),
+    status: str | None = Query(None),
     limit: int = Query(50, ge=1, le=500),
     admin: dict = Depends(get_admin),
 ) -> dict:

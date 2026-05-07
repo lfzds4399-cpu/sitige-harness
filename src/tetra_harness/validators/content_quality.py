@@ -11,10 +11,8 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, safe_read
-
+from .base import ValidationResult, Validator, safe_read
 
 # 常见占位符 — 出现这些且没标"上线后替换"或"示例" → warn
 PLACEHOLDER_PATTERNS = [
@@ -47,7 +45,7 @@ def _scan_placeholders(text: str) -> list[tuple[int, str]]:
     return hits
 
 
-def _try_llm_score(text: str) -> Optional[dict]:
+def _try_llm_score(text: str) -> dict | None:
     """调 DeepSeek 评 4 维分; 失败返回 None.
 
     依赖 utils.llm_client 由基建 agent 提供; 没有就跳过.
@@ -84,7 +82,7 @@ class ContentQualityValidator(Validator):
     name = "content_quality"
     description = "content/本周内容/*.md 占位符检测 + (可选) LLM 4 维评分"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         cfg = (config or {}).get(self.name, {})
         llm_enabled = bool(cfg.get("enabled", False))

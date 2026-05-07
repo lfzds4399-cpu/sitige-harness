@@ -7,12 +7,9 @@
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
-from typing import Optional
 
-from .base import Validator, ValidationResult, line_is_exempt, safe_read
-
+from .base import ValidationResult, Validator, line_is_exempt, safe_read
 
 # 27 项广告法绝对化词 (《广告法》第九条)
 ABSOLUTE_AD_WORDS: tuple[str, ...] = (
@@ -93,7 +90,7 @@ def _scan_dir(root: Path, sub: str, words: tuple[str, ...],
                 if w in line:
                     findings.append((
                         severity,
-                        f"BANNED_WORD",
+                        "BANNED_WORD",
                         f"[{platform}] 红线词 '{w}' @ {rel}",
                         f, line_no,
                     ))
@@ -105,7 +102,7 @@ class ComplianceValidator(Validator):
     name = "compliance"
     description = "抖音/小红书/B站/微信 平台禁词扫描 + 27 项广告法绝对化词"
 
-    def run(self, project_root: Path, config: Optional[dict] = None) -> ValidationResult:
+    def run(self, project_root: Path, config: dict | None = None) -> ValidationResult:
         result = ValidationResult(validator=self.name)
         with self._timed(result):
             total_files_scanned = 0
