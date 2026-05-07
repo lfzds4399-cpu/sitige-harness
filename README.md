@@ -96,6 +96,8 @@ tests/              # pytest suite (api / pipelines / storage / quality)
 
 **Beta.** The harness has been running a real production pipeline for months — but the public API surface (CLI flags, manifest schema) may still shift before 1.0. Pin the minor version if you build on top of it.
 
+The repo doubles as a **reference implementation** of the three-layer pattern (`agents/` + `validators/` + `pipelines/`) the author uses across several internal harnesses — `sitige cli.py self-test` runs the same self-audit (validators present, subprocess captured, quiet logging available, manifest persisted, etc.) against any project that follows the layout.
+
 ## Contributing
 
 PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). For security issues, see [SECURITY.md](SECURITY.md).
