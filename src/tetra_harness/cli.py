@@ -86,10 +86,10 @@ def doctor() -> None:
     # 1. Python 版本
     py_ok = sys.version_info >= (3, 10)
     rows.append(_check(
-        "Python ≥ 3.10",
+        "Python ≥ 3.11",
         py_ok,
         f"current {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
-        "升级到 Python 3.10+",
+        "升级到 Python 3.11+",
     ))
 
     # 2. 依赖

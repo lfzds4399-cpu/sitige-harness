@@ -3,7 +3,7 @@ name = "sitige-harness"
 version = "0.1.0"
 description = "Pipeline engineering harness — composable agents/validators/pipelines runtime, CLI-driven, observable."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Lin", email = "lfzds4399@gmail.com" }]
 license = { text = "MIT" }
 keywords = ["pipeline", "harness", "agents", "validators", "automation", "llm-orchestration"]
@@ -11,9 +11,9 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [

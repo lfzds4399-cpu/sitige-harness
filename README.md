@@ -4,7 +4,7 @@
 > Extracted from a production e-sports business automation system.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-beta-orange)
 
 > 🌏 [中文 README](README.zh-CN.md)

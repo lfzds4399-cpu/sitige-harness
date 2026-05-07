@@ -4,7 +4,7 @@
 > 从一个生产中的电竞业务自动化系统抽出来开源。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-beta-orange)
 
 > 🌏 [English README](README.md)
