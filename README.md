@@ -102,6 +102,18 @@ The repo doubles as a **reference implementation** of the three-layer pattern (`
 
 PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). For security issues, see [SECURITY.md](SECURITY.md).
 
+## Sibling projects
+
+Other small, single-author harnesses I publish under [@lfzds4399-cpu](https://github.com/lfzds4399-cpu) — same MIT, same opinionated taste:
+
+| Repo | One line |
+|---|---|
+| [**ai-council**](https://github.com/lfzds4399-cpu/ai-council) | Multi-voter consensus framework — drop into any pipeline as a validator that requires Claude *and* DeepSeek to agree |
+| [**domain-harness**](https://github.com/lfzds4399-cpu/domain-harness) | Real-world consumer of this three-layer pattern: domain-investing pipeline with hard budget walls |
+| [**voice2ai**](https://github.com/lfzds4399-cpu/voice2ai) | Hands-free dictation for Windows — push-to-talk, 4 STT providers, 10+ chat apps |
+
+If sitige-harness is useful, ⭐ the repo — it's the cheapest signal and it actually moves the needle.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
