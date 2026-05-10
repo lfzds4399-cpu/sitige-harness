@@ -55,3 +55,9 @@ site/
 
 # Claude
 .claude/
+
+# marketing copy (private launch playbook)
+marketing/
+
+# Remotion demo render workspace (gitignored, only the rendered gif ships in docs/)
+.remotion-demo/

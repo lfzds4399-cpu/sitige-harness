@@ -9,6 +9,8 @@
 
 > 🌏 [中文 README](README.zh-CN.md)
 
+![sitige-harness demo (animated illustration)](./docs/sitige-harness-demo.gif)
+
 ## What this is
 
 A three-layer harness for building reliable business pipelines:
