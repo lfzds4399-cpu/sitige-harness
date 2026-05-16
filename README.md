@@ -1,45 +1,37 @@
 # sitige-harness
 
-> A runtime implementation of the [harness-engineering](https://github.com/lfzds4399-cpu/harness-engineering) pattern — async Python, FastAPI, APScheduler, Alembic. Composable agents / validators / pipelines, CLI-driven, observable.
-> Extracted from a production e-sports business automation system.
+Python runtime for business automation pipelines. It provides async stages,
+validators, manifests, scheduling, storage adapters, a FastAPI status API, and
+observability hooks.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-beta-orange)
 
-[中文 README](README.zh-CN.md)
-
-![sitige-harness demo (animated illustration)](./docs/sitige-harness-demo.gif)
-
-## sitige-harness vs harness-engineering
-
-[harness-engineering](https://github.com/lfzds4399-cpu/harness-engineering) writes down the *pattern* (architecture doc, nothing to install). `sitige-harness` is one concrete runtime that ships the pattern as an installable Python package — `pip install -e .`, get a `sitige` CLI, a FastAPI surface, APScheduler jobs, Alembic migrations, Prometheus metrics, and five reference pipelines wired up. Read the pattern doc first if you want to know *why* it looks this way; clone this repo if you want a runnable starter you can fork.
+[Chinese README](README.zh-CN.md)
 
 ## What this is
 
-A three-layer harness for building reliable business pipelines:
+The runtime is organized into three layers:
 
+```text
+agents/       actions that call external services or generate business output
+validators/   deterministic checks for secrets, pricing, schema, policy, and files
+pipelines/    ordered stages with retries, idempotency, artifacts, and status
 ```
-agents/      ← LLM-backed actions (compliance review, content drafting, recruiting outreach…)
-validators/  ← Pure-function gates (secret scan, pricing rules, schema check…)
-pipelines/   ← Orchestrate stages, with retries / DLQ / idempotency / observability
-```
 
-A pipeline is declared in a YAML manifest — it lists stages, their validators, and timeouts. The CLI runs it, persists artifacts, and exposes `/status`, `/runs`, `/manifest` over FastAPI.
-
-## Why
-
-Business automation projects collapse because each script grows its own retry / log / config / metrics tangle. This harness gives you those for free, so the only code you write is the actual *agent* or *validator*.
+A pipeline is declared in YAML. The CLI runs it, persists artifacts, and exposes
+run status over FastAPI.
 
 ## Features
 
-- **CLI-driven** — `sitige run <pipeline>`, `sitige status`, `sitige replay <run>`.
-- **Async-native** — pipelines, agents, validators all `async`.
-- **Observability** — Prometheus metrics, OpenTelemetry traces, health probes, alerter (DingTalk / WeCom).
-- **Scheduling** — APScheduler-backed jobs, idempotency keys, dead-letter queue.
-- **Storage abstraction** — SQLAlchemy + Alembic migrations, Redis cache, pluggable artifact store (local / Qiniu / Aliyun OSS / Tencent COS).
-- **Quality gates** — pyproject ships ruff + mypy + bandit + pytest config; coverage floor.
-- **HTTP API** — FastAPI server exposes pipelines, runs, manifests over WebSocket + REST.
+- CLI commands for running pipelines, checking status, and replaying runs.
+- Async agents, validators, and pipeline stages.
+- Prometheus metrics, OpenTelemetry traces, health probes, and alert hooks.
+- APScheduler jobs, idempotency keys, and a dead-letter queue.
+- SQLAlchemy, Alembic migrations, Redis cache, and pluggable artifact storage.
+- Ruff, mypy, bandit, and pytest configuration.
+- FastAPI surface for pipelines, runs, manifests, REST, and WebSocket updates.
 
 ## Quick start
 
@@ -49,65 +41,60 @@ cd sitige-harness
 pip install -e ".[dev,api,observability,scheduling,storage]"
 
 cp .env.example .env
-# fill in at minimum DEEPSEEK_API_KEY (or another LLM provider)
-
 sitige --help
 sitige run content --dry-run
 ```
 
-## Pipelines included
+Fill provider keys only for pipelines that need them.
 
-The reference pipelines come from the original e-sports use case:
+## Included pipelines
 
-| Pipeline | What it does |
+| Pipeline | Purpose |
 |---|---|
-| `content`    | Topic selection → script → AIGC prompts → compliance review → publish brief |
-| `compliance` | LLM-driven content compliance audit (allow / warn / block) |
-| `recruit`    | Channel scan → outreach → KYC → deposit → contract |
-| `crm`        | Customer lifecycle stages with retention probes |
-| `match`      | Service matching scoring + ranking |
-
-Each pipeline lives in `src/tetra_harness/pipelines/` and ships with a YAML manifest in `configs/`. Use them as-is, fork them, or write your own — the framework doesn't care what business you're in.
+| `content` | Topic selection, script draft, prompt draft, compliance review, publish brief. |
+| `compliance` | Content compliance audit with allow, warn, or block result. |
+| `recruit` | Channel scan, outreach, KYC, deposit, and contract steps. |
+| `crm` | Customer lifecycle stages and retention probes. |
+| `match` | Service matching and ranking. |
 
 ## Project layout
 
-```
+```text
 src/tetra_harness/
-├── agents/         # LLM-backed actions
-├── validators/     # Deterministic gates
-├── pipelines/      # Stage orchestration
-├── api/            # FastAPI server (REST + WebSocket)
-├── scheduling/     # APScheduler + DLQ + idempotency
-├── observability/  # Metrics, tracing, health, alerter
-├── storage/        # DB, cache, artifacts, secrets
-├── manifest.py     # YAML-driven pipeline declaration
-├── cli.py          # `sitige` entry point
-└── config.py       # Env-aware settings
+  agents/         external-service and business actions
+  validators/     deterministic gates
+  pipelines/      stage orchestration
+  api/            FastAPI server
+  scheduling/     APScheduler, idempotency, dead-letter queue
+  observability/  metrics, tracing, health, alerts
+  storage/        DB, cache, artifacts, secrets
+  manifest.py     YAML pipeline declaration
+  cli.py          sitige entry point
+  config.py       environment-aware settings
 
-alembic/            # DB migrations
-configs/            # Pipeline YAML manifests
-docs/               # API / OBSERVABILITY / PIPELINES / SCHEDULING / STORAGE
-tests/              # pytest suite (api / pipelines / storage / quality)
+alembic/          DB migrations
+configs/          pipeline manifests
+docs/             API, observability, pipeline, scheduling, storage docs
+tests/            pytest suite
 ```
 
 ## Documentation
 
-- [Pipelines](docs/PIPELINES.md) — how stages, agents, validators compose
-- [API](docs/API.md) — FastAPI surface
-- [Observability](docs/OBSERVABILITY.md) — metrics, traces, alerts
-- [Scheduling](docs/SCHEDULING.md) — APScheduler, idempotency, DLQ
-- [Storage](docs/STORAGE.md) — DB / cache / artifact
+- [Pipelines](docs/PIPELINES.md)
+- [API](docs/API.md)
+- [Observability](docs/OBSERVABILITY.md)
+- [Scheduling](docs/SCHEDULING.md)
+- [Storage](docs/STORAGE.md)
 
 ## Status
 
-**Beta.** The harness has been running a real production pipeline for months — but the public API surface (CLI flags, manifest schema) may still shift before 1.0. Pin the minor version if you build on top of it.
-
-The repo doubles as a **reference implementation** of the three-layer pattern (`agents/` + `validators/` + `pipelines/`) the author uses across several internal harnesses — `sitige cli.py self-test` runs the same self-audit (validators present, subprocess captured, quiet logging available, manifest persisted, etc.) against any project that follows the layout.
+Beta. CLI flags and manifest schema may still change before 1.0. Pin a minor
+version if you build on top of it.
 
 ## Contributing
 
-PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). For security issues, see [SECURITY.md](SECURITY.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). For security issues, see [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
