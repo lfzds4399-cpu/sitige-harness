@@ -1,15 +1,19 @@
 # sitige-harness
 
-> Pipeline engineering harness — composable agents / validators / pipelines runtime, CLI-driven, observable.
+> A runtime implementation of the [harness-engineering](https://github.com/lfzds4399-cpu/harness-engineering) pattern — async Python, FastAPI, APScheduler, Alembic. Composable agents / validators / pipelines, CLI-driven, observable.
 > Extracted from a production e-sports business automation system.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-beta-orange)
 
-> 🌏 [中文 README](README.zh-CN.md)
+[中文 README](README.zh-CN.md)
 
 ![sitige-harness demo (animated illustration)](./docs/sitige-harness-demo.gif)
+
+## sitige-harness vs harness-engineering
+
+[harness-engineering](https://github.com/lfzds4399-cpu/harness-engineering) writes down the *pattern* (architecture doc, nothing to install). `sitige-harness` is one concrete runtime that ships the pattern as an installable Python package — `pip install -e .`, get a `sitige` CLI, a FastAPI surface, APScheduler jobs, Alembic migrations, Prometheus metrics, and five reference pipelines wired up. Read the pattern doc first if you want to know *why* it looks this way; clone this repo if you want a runnable starter you can fork.
 
 ## What this is
 
@@ -103,18 +107,6 @@ The repo doubles as a **reference implementation** of the three-layer pattern (`
 ## Contributing
 
 PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). For security issues, see [SECURITY.md](SECURITY.md).
-
-## Sibling projects
-
-Other small, single-author harnesses I publish under [@lfzds4399-cpu](https://github.com/lfzds4399-cpu) — same MIT, same opinionated taste:
-
-| Repo | One line |
-|---|---|
-| [**ai-council**](https://github.com/lfzds4399-cpu/ai-council) | Multi-voter consensus framework — drop into any pipeline as a validator that requires Claude *and* DeepSeek to agree |
-| [**domain-harness**](https://github.com/lfzds4399-cpu/domain-harness) | Real-world consumer of this three-layer pattern: domain-investing pipeline with hard budget walls |
-| [**voice2ai**](https://github.com/lfzds4399-cpu/voice2ai) | Hands-free dictation for Windows — push-to-talk, 4 STT providers, 10+ chat apps |
-
-If sitige-harness is useful, ⭐ the repo — it's the cheapest signal and it actually moves the needle.
 
 ## License
 

@@ -1,13 +1,17 @@
 # sitige-harness
 
-> 流水线工程化框架 — agents / validators / pipelines 三层组合，CLI 驱动，全自动可观测。
+> [harness-engineering](https://github.com/lfzds4399-cpu/harness-engineering) pattern 的一个 runtime 实现 — async Python，FastAPI，APScheduler，Alembic。agents / validators / pipelines 三层组合，CLI 驱动，全自动可观测。
 > 从一个生产中的电竞业务自动化系统抽出来开源。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-beta-orange)
 
-> 🌏 [English README](README.md)
+[English README](README.md)
+
+## sitige-harness 跟 harness-engineering 什么区别
+
+[harness-engineering](https://github.com/lfzds4399-cpu/harness-engineering) 是 pattern 文档（架构说明，不可 install）。`sitige-harness` 是这个 pattern 的一个可装 Python package 实现 — `pip install -e .` 就有 `sitige` CLI、FastAPI 接口、APScheduler 调度、Alembic 迁移、Prometheus 指标，加 5 条 reference pipeline 全接线。想懂"为什么这么写"读 pattern 文档；想要可跑的 starter 直接 fork 本仓库。
 
 ## 这是什么
 
