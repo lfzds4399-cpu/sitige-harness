@@ -79,8 +79,8 @@ customers to services.
 | `match` | Service matching and ranking. |
 
 Each pipeline lives in `src/tetra_harness/pipelines/` with a YAML manifest
-in `configs/`. Use as-is, fork, or write your own — the framework does not
-care what business you're in.
+in `configs/`. Pipelines are domain-agnostic — fork them, replace them, or
+add new ones for any business workflow.
 
 ## Project layout
 
