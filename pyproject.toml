@@ -17,11 +17,6 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-[project.urls]
-Homepage = "https://github.com/lfzds4399-cpu/sitige-harness"
-Repository = "https://github.com/lfzds4399-cpu/sitige-harness"
-Issues = "https://github.com/lfzds4399-cpu/sitige-harness/issues"
-Changelog = "https://github.com/lfzds4399-cpu/sitige-harness/blob/main/CHANGELOG.md"
 dependencies = [
   "typer>=0.12.0",
   "rich>=13.0",
@@ -32,6 +27,12 @@ dependencies = [
   "openai>=1.40",
   "tenacity>=8.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/lfzds4399-cpu/sitige-harness"
+Repository = "https://github.com/lfzds4399-cpu/sitige-harness"
+Issues = "https://github.com/lfzds4399-cpu/sitige-harness/issues"
+Changelog = "https://github.com/lfzds4399-cpu/sitige-harness/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
