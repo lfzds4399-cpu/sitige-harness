@@ -1,6 +1,6 @@
 # Tetra Harness API
 
-四面体电竞 harness REST + WebSocket 接口. FastAPI, 默认端口 8002.
+sitige-harness REST + WebSocket API. FastAPI, default port 8002.
 
 ## 启动
 

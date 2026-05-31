@@ -1,4 +1,4 @@
-# 四面体电竞 harness · 存储层配置
+# sitige-harness · storage layer config
 # 真正生效以环境变量为准, 这里是缺省 + 文档.
 
 db:

@@ -218,8 +218,8 @@ class CRMAgent(Agent):
             f"[{h['id']} score={h['score']}]\n{h['snippet']}" for h in hits
         ) or "(无命中条目)"
         instr = (
-            "你是「四面体电竞」客服助手. 根据下方知识库片段回答用户问题, "
-            "不要编造未提到的政策. 语气兄弟向, 不油腻. 回复 ≤ 200 字.\n\n"
+            "你是 esports 工作室的客服助手. 根据下方知识库片段回答用户问题, "
+            "不要编造未提到的政策. 语气友好, 不油腻. 回复 ≤ 200 字.\n\n"
             f"知识库:\n{kb_block}\n\n用户问题:\n{text[:1500]}"
         )
         client = LLMClient(provider=config.get("provider", "deepseek"))

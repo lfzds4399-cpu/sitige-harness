@@ -39,7 +39,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Tetra Harness API",
         version="2.0.0",
-        description="四面体电竞 harness REST + WebSocket 接口 (黑金主题 dashboard 后端)",
+        description="sitige-harness REST + WebSocket API (dashboard backend)",
     )
 
     app.add_middleware(

@@ -45,7 +45,7 @@ async def _stage_intake(ctx: dict, config: dict) -> dict:
         "user_segment": "regular",
         "urgency": "normal",
         "id_card": "",
-        "service": "撤离陪练 · 大佬带飞",
+        "service": "coaching session",
     }
     ctx["order"] = order
     _save_json(f"intake_{order['order_id']}.json", order)

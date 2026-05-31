@@ -1,4 +1,4 @@
-"""tetra_harness — 四面体电竞业务流水线工程化平台.
+"""tetra_harness — sitige-harness pipeline engineering runtime.
 
 三层架构:
 - agents/      业务逻辑 (LLM / 规则 / 外部 API 调用)

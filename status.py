@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""四面体电竞 · 项目状态薄壳.
+"""sitige-harness · 项目状态薄壳.
 
 优先调 `python -m tetra_harness status` (CLI 由基建 agent 提供).
 基建 agent 还没接 status 命令时, fallback 到原版逻辑 (兼容).
@@ -61,7 +61,7 @@ def c(t, color):
 
 def _fallback_main():
     print(c("\n╔═════════════════════════════════════════════════════════════════╗", C.GOLD))
-    print(c("║  四面体电竞 · 项目状态                                           ║", C.B + C.GOLD))
+    print(c("║  sitige-harness · 项目状态                                           ║", C.B + C.GOLD))
     print(c("║  " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             + "                                              ║", C.GRAY))
     print(c("╚═════════════════════════════════════════════════════════════════╝", C.GOLD))

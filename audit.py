@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""四面体电竞 · Harness 一键审核 (薄壳).
+"""sitige-harness · Harness 一键审核 (薄壳).
 
 内部走 tetra_harness.validators.file_existence + compliance + secret_scanner.
-保持旧版输出兼容 (145✓ 0⚠ 0✗ 黑金风格 stdout) + last-audit.json.
+Stdout-compatible with legacy audit format (✓⚠✗ summary) + last-audit.json.
 
 用法:
     python harness/audit.py
@@ -43,7 +43,7 @@ from tetra_harness.validators.file_existence import (  # noqa: E402
 )
 
 
-# ---------- ANSI 黑金 ----------
+# ---------- ANSI palette ----------
 class C:
     R = "\033[0m"; B = "\033[1m"; DIM = "\033[2m"
     RED = "\033[91m"; GRN = "\033[92m"; YEL = "\033[93m"
@@ -147,7 +147,7 @@ def _render_module(mod: _ModuleResult, verbose: bool = False) -> None:
 
 def _render_summary(results: list[_ModuleResult]) -> tuple[str, dict]:
     print("\n" + c("━" * 70, C.GOLD))
-    print(c("四面体电竞 · Harness 审核 — 总览", C.B + C.GOLD))
+    print(c("sitige-harness · Harness 审核 — 总览", C.B + C.GOLD))
     print(c("━" * 70, C.GOLD))
     total = {"ok": 0, "warn": 0, "fail": 0}
     for r in results:
@@ -173,7 +173,7 @@ def _render_summary(results: list[_ModuleResult]) -> tuple[str, dict]:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="四面体电竞 harness audit (薄壳, 内部走 validators)")
+    p = argparse.ArgumentParser(description="sitige-harness harness audit (薄壳, 内部走 validators)")
     p.add_argument("--module", help="只跑某个模块: " + " / ".join(ALL_CHECKS))
     p.add_argument("--json", action="store_true", help="同时写 harness/last-audit.json")
     p.add_argument("--strict", action="store_true", help="warn 当 fail (CI exit 1)")
@@ -181,7 +181,7 @@ def main() -> None:
     args = p.parse_args()
 
     print(c("\n╔═════════════════════════════════════════════════════════════════╗", C.GOLD))
-    print(c("║  四面体电竞 · 国内三角洲陪玩流量站 · Harness 审核                ║", C.B + C.GOLD))
+    print(c("║  sitige-harness · pipeline audit                                 ║", C.B + C.GOLD))
     print(c("║  " + NOW + "                                              ║", C.GRAY))
     print(c("╚═════════════════════════════════════════════════════════════════╝", C.GOLD))
 

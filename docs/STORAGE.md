@@ -1,6 +1,6 @@
-# 四面体电竞 · harness 存储层 (STORAGE)
+# sitige-harness · storage layer (STORAGE)
 
-`tetra_harness.storage` 提供统一的 db / cache / artifact / secrets 抽象, 业务层一律走它. 国产 cloud 优先, 不依赖 AWS / GCS.
+`tetra_harness.storage` provides a unified db / cache / artifact / secrets abstraction. Cloud-agnostic — pluggable adapters for any S3-compatible storage.
 
 ## 模块速览
 

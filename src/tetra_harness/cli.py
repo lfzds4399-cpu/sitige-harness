@@ -22,7 +22,7 @@ from tetra_harness.utils.subprocess_safe import safe_run
 
 app = typer.Typer(
     name="tetra",
-    help="四面体电竞 harness — agents/validators/pipelines 三层流水线 CLI",
+    help="sitige-harness — agents/validators/pipelines three-layer pipeline CLI",
     add_completion=False,
     no_args_is_help=True,
 )
@@ -118,9 +118,6 @@ def doctor() -> None:
 
     required_keys = [
         "DEEPSEEK_API_KEY",
-        "KOOK_BOT_TOKEN",
-        "WECHAT_APP_ID",
-        "WECHAT_APP_SECRET",
         "POSTGRES_PASSWORD",
         "REDIS_HOST",
         "SERVER_PORT",

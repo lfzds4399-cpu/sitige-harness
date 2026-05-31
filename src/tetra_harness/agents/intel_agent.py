@@ -36,8 +36,8 @@ _TODO_APIS = {
 
 def _mock_trends(platform: str, n: int) -> list[dict[str, Any]]:
     keywords = [
-        "三角洲行动", "撤离打法", "高分段秘籍", "大佬带飞",
-        "工作室招募", "陪练日记", "AK 技巧", "撞车队战术",
+        "tactical FPS", "extraction guide", "high-rank tips", "carry highlights",
+        "studio recruit", "coaching diary", "weapon tips", "team tactics",
     ]
     return [
         {

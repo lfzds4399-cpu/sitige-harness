@@ -22,11 +22,11 @@ _log = logging.getLogger("tetra.agent.content")
 
 # ---------------- prompt 模板 ---------------- #
 _BRAND_BRIEF = """
-你是「四面体电竞」内容主笔. 品牌人设:
-- 业务: 三角洲行动 撤离 / 陪练 / 工作室分包 / 留学生友好.
-- 调性: 兄弟向 · 实战派 · 黑金硬朗 · 不油腻不土味.
-- 红线: 不得提及代练 / 外挂 / 充值 / 灰色话术 / 押金返利等违规词.
-- 钩子方向: 高分段实战, 大佬本人解说, 队友 carry 名场面, 反诈防骗.
+你是一家 esports 内容工作室的主笔. 品牌人设:
+- 业务: 游戏教学 / 玩家社区 / 内容创作.
+- 调性: 友好实战派, 不油腻.
+- 红线: 不得提及代练 / 外挂 / 充值返利 / 灰色话术等违规词.
+- 钩子方向: 高分段实战, 玩家解说, 团队 carry 高光.
 
 输出全部 JSON, 不要任何 Markdown 装饰.
 """.strip()
@@ -134,8 +134,8 @@ class ContentAgent(Agent):
     ) -> tuple[Any, float]:
         script = payload.get("script") or {}
         instr = (
-            "把以下脚本的每个分镜转成 AIGC 生成 prompt (即梦/可灵适配, 中英双语). "
-            "另出一份'人工检查清单' (色调/品牌色 #FFD700 黑金 / 禁忌镜头).\n"
+            "把以下脚本的每个分镜转成 AIGC 生成 prompt (中英双语). "
+            "另出一份'人工检查清单' (色调/品牌色一致 / 禁忌镜头).\n"
             f"脚本: {json.dumps(script, ensure_ascii=False)[:3000]}\n"
             "返回 JSON: {prompts: [...], checklist: [...]}"
         )

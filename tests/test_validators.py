@@ -4,18 +4,11 @@
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
 
-# 把 src/ 加 sys.path
-HERE = Path(__file__).resolve().parent
-SRC = HERE.parent / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
-
-from tetra_harness.validators import (  # noqa: E402
+from tetra_harness.validators import (
     BuildHealthValidator,
     ComplianceValidator,
     ContentQualityValidator,
@@ -28,7 +21,8 @@ from tetra_harness.validators import (  # noqa: E402
 )
 from tetra_harness.validators.base import line_is_exempt  # noqa: E402
 
-REAL_ROOT = HERE.parent.parent  # repo root
+HERE = Path(__file__).resolve().parent
+REAL_ROOT = HERE.parent  # repo root
 
 
 # =================== fixtures ===================
@@ -211,7 +205,7 @@ def test_content_quality_clean(tmp_root):
     d = tmp_root / "content/本周内容"
     d.mkdir(parents=True)
     (d / "干净.md").write_text(
-        "# 三角洲新手必看\n带你 1 周从 K 到 Z, 装备实战截图.\n价格: 99 元/小时\n",
+        "# Beginner tactical guide\nFrom rank K to Z in 1 week, gear screenshots.\nPrice: $9.9/hour\n",
         encoding="utf-8",
     )
     v = ContentQualityValidator()
@@ -253,8 +247,8 @@ def test_pricing_bad_sum(tmp_root):
     d = tmp_root / "partners/pricing"
     d.mkdir(parents=True)
     (d / "分成结构.md").write_text(
-        """| S1 | 护航陪玩 | 30% | 65% | 错误 |
-| S2 | 代肝陪练 | 30% | 70% | 标准 |
+        """| S1 | service_a | 30% | 65% | wrong |
+| S2 | service_b | 30% | 70% | standard |
 """,
         encoding="utf-8",
     )

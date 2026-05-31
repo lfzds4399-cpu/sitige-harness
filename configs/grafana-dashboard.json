@@ -3,7 +3,7 @@
   "uid": "tetra-harness-obs",
   "schemaVersion": 39,
   "version": 1,
-  "tags": ["tetra", "harness", "黑金"],
+  "tags": ["tetra", "harness", "pipeline"],
   "timezone": "Asia/Shanghai",
   "refresh": "30s",
   "time": { "from": "now-6h", "to": "now" },

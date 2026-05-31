@@ -11,8 +11,8 @@ weekly_count:
   douyin: 4
   xiaohongshu: 3
   bilibili: 1
-brand_keywords: [四面体电竞, 三角洲, 撤离, 黑金, 留学生友好]
-tone: 兄弟向 / 实战派 / 不油腻
+brand_keywords: [example-brand, esports, tactical-shooter, community]
+tone: friendly / practical / no-fluff
 
 # ---- stages ----
 stages:

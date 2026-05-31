@@ -1,7 +1,6 @@
-# 四面体电竞 Harness · 可观测性 SOP
+# sitige-harness · Observability SOP
 
-国产合规栈: **Prometheus + Grafana + 阿里 ARMS / 腾讯 APM + 钉钉 / 飞书 + 阿里云邮件**.
-不要 Honeycomb / Datadog / NewRelic / PagerDuty (海外, 备案麻烦).
+Default stack: **Prometheus + Grafana + OpenTelemetry**. Alerting via webhook to any chat/email provider (DingTalk / WeCom / Slack / Lark / SMTP all supported).
 
 ## 0. 总览
 
@@ -9,11 +8,11 @@
 |---|---|---|
 | 指标 | Prometheus + Grafana | `observability/metrics.py` |
 | 健康端点 | FastAPI APIRouter | `observability/health.py` |
-| 链路追踪 | OpenTelemetry → 阿里 ARMS / 腾讯 APM | `observability/tracing.py` |
-| 告警 | 钉钉 / 飞书 / 阿里云邮件 | `observability/alerter.py` |
+| 链路追踪 | OpenTelemetry exporter (OTLP) | `observability/tracing.py` |
+| 告警 | DingTalk / WeCom / Slack / SMTP | `observability/alerter.py` |
 
 配置: `configs/observability.yaml`
-Grafana dashboard: `configs/grafana-dashboard.json` (12 panel, 黑金主题)
+Grafana dashboard: `configs/grafana-dashboard.json` (12 panel)
 
 ## 1. 装依赖
 

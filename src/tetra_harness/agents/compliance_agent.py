@@ -21,7 +21,7 @@ _log = logging.getLogger("tetra.agent.compliance")
 
 
 _REVIEW_SYSTEM = """
-你是「四面体电竞」内容合规审核员. 标红线:
+你是 esports 内容合规审核员. 标红线:
 1) 代练 / 外挂 / 脚本 / 改机
 2) 充值返利 / 押金骗局 / 跑路诈骗
 3) 未成年人参与对局 / 福利诱导

@@ -1,4 +1,4 @@
-# 四面体电竞 · 调度配置
+# sitige-harness · schedule config
 # 加载: TetraScheduler.load_from_yaml("harness/configs/schedule.yaml")
 # cron 5 段: 分 时 日 月 周   (支持 6 段 = 秒在最前)
 # 时区: TetraScheduler 默认 Asia/Shanghai

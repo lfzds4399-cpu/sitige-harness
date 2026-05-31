@@ -60,28 +60,28 @@ class _FakeLLM:
         if "选题" in last or "topics" in last:
             return json.dumps({
                 "topics": [
-                    {"title": "高分段撤离实战 #1", "platform": "douyin",
-                     "hook": "三分钟教你卡点撤离", "angle": "实战",
+                    {"title": "high-rank gameplay #1", "platform": "douyin",
+                     "hook": "three-minute tactics walkthrough", "angle": "实战",
                      "format": "短视频", "est_engagement": 8, "est_conversion": 6}
                     for _ in range(3)
                 ]
             }, ensure_ascii=False)
         if "脚本" in last or "shots" in last:
             return json.dumps({
-                "hook": "你以为撤离就是跑?",
+                "hook": "think you know the meta?",
                 "shots": [
-                    {"visual": "玩家蹲点", "voiceover": "蹲点是基础", "duration_sec": 4},
-                    {"visual": "队友接应", "voiceover": "队友卡位", "duration_sec": 4},
+                    {"visual": "player holds angle", "voiceover": "positioning is key", "duration_sec": 4},
+                    {"visual": "teammate trades", "voiceover": "team play", "duration_sec": 4},
                 ],
-                "caption": "实战教学",
-                "cta": "@四面体电竞 私信约局",
-                "platform_tags": ["三角洲", "撤离"],
+                "caption": "practical guide",
+                "cta": "@example_brand DM for booking",
+                "platform_tags": ["tactical_fps", "gameplay"],
                 "risk_note": "无",
             }, ensure_ascii=False)
         if "aigc" in last or "prompts" in last or "分镜" in last:
             return json.dumps({
                 "prompts": [{"shot_id": 1, "prompt_zh": "...", "prompt_en": "..."}],
-                "checklist": ["黑金主色", "无未成年", "无武器特写"],
+                "checklist": ["brand colour consistent", "no minors", "no weapon close-up"],
             }, ensure_ascii=False)
         if "verdict" in last or "审核" in last or "合规" in last:
             return json.dumps({
@@ -215,7 +215,7 @@ async def test_compliance_pipeline_3_stages(tmp_manifest):
         "platform": "douyin",
         "strictness": "high",
         "manual_review_threshold": 60,
-        "mock_text": "本周三角洲撤离实战教学, 兄弟带飞.",
+        "mock_text": "weekly tactical guide, friendly tone.",
         "mock_images": [],
     }
     result = await CompliancePipeline().run_all(config, manifest=tmp_manifest)

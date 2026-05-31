@@ -105,7 +105,7 @@ async def _stage_publish_brief(ctx: dict, config: dict) -> dict:
             f"- {d.isoformat()} · {t.get('platform','?')} · {t.get('title','-')} (hook: {t.get('hook','-')})"
         )
 
-    brief_md = f"""# 四面体电竞 · 本周内容发布 brief
+    brief_md = f"""# sitige-harness · weekly content brief
 
 ## 1. 周日历 (基于 {len(topics)} 选题)
 {chr(10).join(cal_lines) or '- (无候选)'}

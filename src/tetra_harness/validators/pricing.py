@@ -15,11 +15,11 @@ from .base import ValidationResult, Validator, safe_read
 
 # 业务 → 期望平台抽成 (从 partners/pricing/分成结构.md)
 EXPECTED_DEFAULT_TAKE_RATE = {
-    "护航陪玩": 30,
-    "代肝陪练": 30,
-    "上分辅导": 35,
-    "撞车": 25,
-    "物资回收": 20,
+    "service_a": 30,
+    "service_b": 30,
+    "service_c": 35,
+    "service_d": 25,
+    "service_e": 20,
 }
 
 # 等级单调递增
@@ -45,7 +45,7 @@ def _parse_table_row(text: str, label: str) -> list[float] | None:
 def _check_total_100(text: str) -> list[tuple]:
     out = []
     for biz, expected in EXPECTED_DEFAULT_TAKE_RATE.items():
-        # 找形如 "S1 | 护航陪玩 | 30% | 70%" 的行
+        # 找形如 "S1 | service_a | 30% | 70%" 的行
         for line in text.splitlines():
             if biz in line and "|" in line:
                 nums = re.findall(r"(\d+(?:\.\d+)?)\s*%", line)

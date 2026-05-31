@@ -291,34 +291,8 @@ def check_kook(root: Path) -> list[tuple]:
     else:
         out.append(("error", "KOOK_BOT_SKEL", f"kook/bot/ 仅 {bot_hit}/{len(bot_files)} 文件", ""))
 
-    bad_imports = ["import discord", "from discord", "from slack_sdk",
-                   "import openai", "from openai", "import telegram"]
-    main_text = (_read_text(root, "kook/bot/main.py")
-                 + _read_text(root, "kook/bot/services/rag.py")
-                 + _read_text(root, "kook/bot/services/server_api.py"))
-    bad_hit = next((b for b in bad_imports if b in main_text), None)
-    if bad_hit:
-        out.append(("error", "KOOK_OVERSEAS_SDK", f"违反海外 SDK 红线: 含 '{bad_hit}'", ""))
-    else:
-        out.append(("ok", "KOOK_NO_OVERSEAS_SDK",
-                    "无海外 SDK 引用（discord/slack/openai/telegram）", ""))
-
-    roles_text = _read_text(root, "kook/roles.md")
-    if "#FFD700" in roles_text and "#0A0A0B" in roles_text:
-        out.append(("ok", "KOOK_BRAND_COLOR", "黑金配色锁定（#FFD700 / #0A0A0B）", ""))
-    else:
-        out.append(("warn", "KOOK_BRAND_COLOR", "未在 roles.md 显式声明黑金 hex", ""))
-
-    bad_color_lines = []
-    for line in roles_text.splitlines():
-        if "#A2185F" in line or "#9D00FF" in line:
-            if not line_is_exempt(line):
-                bad_color_lines.append(line.strip()[:60])
-    if bad_color_lines:
-        out.append(("error", "KOOK_BAD_COLOR",
-                    "出现红紫色 hex（违反 brand 配色锁）", "; ".join(bad_color_lines)))
-    else:
-        out.append(("ok", "KOOK_COLOR_LOCK", "无非法红紫色（brand 配色锁通过）", ""))
+    # (reference: bot/SDK allow-list checks intentionally removed from this OSS extract;
+    # adapt for your own project — see docstring at the top of this file.)
 
     welcome_text = _read_text(root, "kook/welcome-flow.md")
     if "信息撮合" in welcome_text and ("18" in welcome_text or "未成年" in welcome_text):
@@ -432,26 +406,18 @@ def check_deploy(root: Path) -> list[tuple]:  # noqa: C901
     else:
         out.append(("error", "DEPLOY_COMPOSE_MISSING", "docker-compose.yml 缺失", ""))
 
-    # 2. .env.全栈.example
-    if _file_exists(root, ".env.全栈.example"):
-        env_text = _read_text(root, ".env.全栈.example")
+    # 2. .env.example
+    if _file_exists(root, ".env.example"):
+        env_text = _read_text(root, ".env.example")
         required = ["POSTGRES_PASSWORD", "REDIS_PASSWORD", "JWT_SECRET",
-                    "WECHAT_APP_ID", "QQ_APP_ID", "KOOK_BOT_TOKEN",
-                    "DEEPSEEK_API_KEY", "ICP_BEIAN", "BACKUP_PROVIDER"]
+                    "DEEPSEEK_API_KEY", "BACKUP_PROVIDER"]
         miss = [k for k in required if k not in env_text]
         if not miss:
-            out.append(("ok", "DEPLOY_ENV", f".env.全栈.example 关键字齐 ({len(required)} 个)", ""))
+            out.append(("ok", "DEPLOY_ENV", f".env.example 关键字齐 ({len(required)} 个)", ""))
         else:
             out.append(("error", "DEPLOY_ENV_MISSING", f".env 缺关键字: {','.join(miss)}", ""))
-        forbidden = ["AWS_", "AZURE_", "GCP_", "CLOUDFLARE_TOKEN", "VERCEL_TOKEN",
-                     "HEROKU_", "DIGITALOCEAN_"]
-        bad = [k for k in forbidden if k in env_text]
-        if bad:
-            out.append(("error", "DEPLOY_OVERSEAS_KEY", f".env 含海外服务 KEY: {','.join(bad)}", ""))
-        else:
-            out.append(("ok", "DEPLOY_NO_OVERSEAS_KEY", "无海外服务 KEY", ""))
     else:
-        out.append(("error", "DEPLOY_ENV_FILE", ".env.全栈.example 缺失", ""))
+        out.append(("error", "DEPLOY_ENV_FILE", ".env.example 缺失", ""))
 
     # 3. nginx
     nginx_files = ["ops/deploy/nginx.conf", "ops/deploy/conf.d/site.conf"]
@@ -470,10 +436,7 @@ def check_deploy(root: Path) -> list[tuple]:  # noqa: C901
         out.append(("ok", "DEPLOY_RATELIMIT", "rate limit 已配", ""))
     else:
         out.append(("warn", "DEPLOY_RATELIMIT_MISSING", "无 rate limit", ""))
-    if "ICP_BEIAN" in nginx_text or "icp" in nginx_text.lower():
-        out.append(("ok", "DEPLOY_ICP", "备案号位置预留", ""))
-    else:
-        out.append(("warn", "DEPLOY_ICP_MISSING", "无备案号位置", ""))
+    # (reference: jurisdiction-specific footer-id checks removed from this OSS extract.)
 
     # 4. deploy.sh
     if _file_exists(root, "deploy.sh"):

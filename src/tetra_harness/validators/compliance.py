@@ -1,7 +1,7 @@
 """compliance — 平台合规扫描.
 
 扫 content/marketing/kook/bot/partners 各模块, 命中红线词且不在豁免上下文 → finding.
-- 抖音/小红书禁词: 27 项绝对化广告法词 + 16 项游戏陪玩红线词
+- 抖音/小红书禁词: 27 项绝对化广告法词 + 16 项游戏服务红线词
 - B 站宽松
 - SKILL E5 上下文豁免: 含 "禁止/禁用/不准/避免" 等的行不报
 """
@@ -20,7 +20,7 @@ ABSOLUTE_AD_WORDS: tuple[str, ...] = (
     "万能", "包治",
 )
 
-# 16 项游戏陪玩平台红线词
+# 16 项游戏服务平台红线词
 GAME_BANNED_WORDS: tuple[str, ...] = (
     "代练", "上分包过", "包上分", "撞车包赢", "卖号", "买号",
     "包赔", "封号包赔", "外挂", "破解", "辅助器", "秒升段",
@@ -42,7 +42,7 @@ PLATFORM_RULES = {
         "severity": "error",
     },
     "bilibili": {
-        # B 站对游戏陪玩词宽松, 但广告法仍要遵守
+        # B 站对游戏服务词宽松, 但广告法仍要遵守
         "banned": ABSOLUTE_AD_WORDS,
         "severity": "warn",
     },

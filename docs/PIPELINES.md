@@ -1,4 +1,4 @@
-# 四面体电竞 · Harness Pipelines 总览
+# sitige-harness · Pipelines overview
 
 5 条业务流水线, 共 23 stage. 每条 pipeline 由 `pipelines/<name>_pipeline.py` 实现, 配置在 `configs/<name>.yaml`.
 

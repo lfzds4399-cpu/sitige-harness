@@ -1,5 +1,5 @@
-# 四面体电竞 Harness · 可观测性配置
-# 国产优先: 阿里 ARMS / 腾讯 APM / 钉钉 / 飞书 / 阿里云邮件
+# sitige-harness · observability config
+# Default exporters: Prometheus, OTLP, webhook-based alerting (DingTalk / WeCom / Slack / SMTP).
 #
 # 加载: tetra_harness.observability 各模块按需读
 # 修改后无需重启 Prometheus, /metrics 端点是动态的
